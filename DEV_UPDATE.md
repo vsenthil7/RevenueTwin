@@ -88,3 +88,17 @@ gained the 5 portfolio categories bootstrap uses. No scope shrink.
 **Executed here:** `tests/unit/reconciliation.test.ts` — **18 tests, 100% on all four metrics**.
 
 **Loop state:** S50 ✅ → next S51 (core/twin.ts — 8-state machine).
+
+---
+
+## 2026-06-12 — S51 ✅ twin state machine (foundation)
+
+**Built:** `src/core/twin.ts` — `TwinTimeline` per-customer engine with validated transitions
+(`TWIN_TRANSITIONS` 8-state table), immutable audited history, `nextStates`, terminal detection,
+and `caseStatusToTwinState` (collapses in_review/escalated → triaged). Injectable clock. Backbone
+of the Revenue Twin Explorer. No file imported twin.ts, so this is additive depth, not a missing
+import — built it properly rather than faking a dependency.
+
+**Executed here:** `tests/unit/twin.test.ts` — **12 tests, 100% on all four metrics**.
+
+**Loop state:** S51 ✅ → next S52 (intent/workiq.ts — the Work IQ moat).

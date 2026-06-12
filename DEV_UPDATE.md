@@ -121,3 +121,20 @@ Golden Thread exact. Updated S50 reconciliation tests accordingly (build→test�
 updated) — **28 tests, 100% on all four metrics**. MOAT proof green: blind 0 vs sighted 1, exact £1,200.00.
 
 **Loop state:** S52 ✅ → next S53 (remediation/action-layer.ts + api/platform.ts).
+
+---
+
+## 2026-06-12 — S53 ✅ action layer + connector platform (foundation complete)
+
+**Built:** `src/remediation/action-layer.ts` — propose→approve→execute→reverse lifecycle with
+separation-of-duties (approver ≠ proposer), full idempotency, audit on every transition, and the
+`isExecuted(proposalId)` gate that billing write-back checks before touching money. Plus
+`src/api/platform.ts` — `ConnectorRegistry` (register, health/mode, byHealth, allHealthy) and
+webhook subscription management.
+
+**Executed here:** `tests/unit/action-layer.test.ts` (12) + `tests/unit/platform.test.ts` (11) —
+**23 tests, 100% on all four metrics**.
+
+**Foundation milestone:** all 7 missing foundation modules (money, model, audit, reconciliation,
+twin, workiq+golden-thread, action-layer+platform) now exist and are individually 100%-covered.
+**Loop state:** S53 ✅ → next S54 (compile-green sweep: `tsc --noEmit` clean across the WHOLE tree).

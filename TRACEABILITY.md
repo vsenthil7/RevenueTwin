@@ -23,7 +23,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | F-03 | Tamper-evident append-only audit (SHA-256 chain) | `src/core/audit.ts` | S49 | `tests/unit/audit.test.ts` (12, 100%) | ✅ |
 | F-04 | Deterministic reconciliation decides pass/fail (never an LLM) | `src/core/reconciliation.ts` | S50 | `tests/unit/reconciliation.test.ts` (18, 100%) | ✅ |
 | F-05 | 8-state revenue-twin machine, audited transitions | `src/core/twin.ts` | S51 | `tests/unit/twin.test.ts` (12, 100%) | ✅ |
-| F-06 | Work IQ commercial-intent moat; blind-vs-sighted recall delta | `src/intent/workiq.ts` | S52 | `tests/functional/workiq.test.ts` | ⬜ |
+| F-06 | Work IQ commercial-intent moat; blind-vs-sighted recall delta | `src/intent/workiq.ts` + `src/core/golden-thread.ts` | S52 | `tests/functional/workiq.test.ts` (12, 100%) | ✅ |
 | F-07 | Idempotent reversible action layer | `src/remediation/action-layer.ts` | S53 | `tests/unit/action-layer.test.ts` | ⬜ |
 | F-08 | Connector platform registry + health/mode | `src/api/platform.ts` | S53 | `tests/unit/platform.test.ts` | ⬜ |
 

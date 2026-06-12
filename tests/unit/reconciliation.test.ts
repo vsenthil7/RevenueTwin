@@ -32,16 +32,16 @@ test('netRecoverable decays with age and is zero at/after the window', () => {
   assert.equal(netRecoverable(input({ ageDays: RECOVERY_WINDOW_DAYS + 100 })).amount, 0);
 });
 
-test('netRecoverable scales by confidence and contract strength', () => {
-  assert.equal(netRecoverable(input({ confidence: 0.5 })).amount, 50_00);
+test('netRecoverable scales by contract strength (confidence does NOT scale amount)', () => {
+  assert.equal(netRecoverable(input({ confidence: 0.5 })).amount, 100_00); // confidence is a gate, not a haircut
   assert.equal(netRecoverable(input({ contractStrength: 0.5 })).amount, 50_00);
   // strength defaults to 1 when omitted
   assert.equal(netRecoverable(input({ contractStrength: undefined })).amount, 100_00);
 });
 
-test('netRecoverable clamps confidence into 0..1', () => {
+test('netRecoverable validates confidence into 0..1 but does not scale by it', () => {
   assert.equal(netRecoverable(input({ confidence: 5 })).amount, 100_00);
-  assert.equal(netRecoverable(input({ confidence: -1 })).amount, 0);
+  assert.equal(netRecoverable(input({ confidence: -1 })).amount, 100_00);
 });
 
 test('netRecoverable returns zero when there is no gross', () => {

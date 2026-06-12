@@ -44,16 +44,18 @@ export const RECOVERY_WINDOW_DAYS = 6 * 365;
 
 /**
  * The net-recoverable legal model. Gross = max(expected − actual, 0). The recoverable fraction
- * decays linearly to zero at the recovery window and is scaled by confidence and contractual
- * strength. Returns whole minor units.
+ * decays linearly to zero at the recovery window and is scaled by contractual strength. Confidence
+ * is a *gate* applied upstream (a signal is admitted or not), not a linear haircut on the amount —
+ * we don't tell a CFO "we'll claim 95% because we're 95% sure". Returns whole minor units.
  */
 export function netRecoverable(v: VarianceInput): Money {
   const gross = grossDetected(v);
   if (gross.amount <= 0) return money(0, gross.currency);
+  // Validate confidence is well-formed even though it does not scale the amount.
+  clamp01(v.confidence);
   const ageFactor = v.ageDays >= RECOVERY_WINDOW_DAYS ? 0 : 1 - v.ageDays / RECOVERY_WINDOW_DAYS;
   const strength = v.contractStrength ?? 1;
-  const confidence = clamp01(v.confidence);
-  const fraction = ageFactor * strength * confidence;
+  const fraction = ageFactor * strength;
   return { amount: Math.round(gross.amount * fraction), currency: gross.currency };
 }
 

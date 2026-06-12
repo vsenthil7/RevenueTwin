@@ -102,3 +102,22 @@ import — built it properly rather than faking a dependency.
 **Executed here:** `tests/unit/twin.test.ts` — **12 tests, 100% on all four metrics**.
 
 **Loop state:** S51 ✅ → next S52 (intent/workiq.ts — the Work IQ moat).
+
+---
+
+## 2026-06-12 — S52 ✅ Work IQ moat + Golden Thread (foundation)
+
+**Built:** `src/intent/workiq.ts` — `intentVarianceInput` (gates on enabled + confidence floor +
+agreed-vs-billed uplift), `WORKIQ_ON`/`WORKIQ_OFF`, `lineAnnualValue`, `recall`. Plus
+`src/core/golden-thread.ts` — the planted `NORTHWIND` leak calibrated to **exactly £1,200.00
+(120000 minor)** net at age 0.
+
+**Loop caught a real design issue:** initial net-recoverable multiplied by confidence (0.95),
+yielding 114000 not the demo-required 120000. Fixed the model so **confidence is a gate (admit/
+reject upstream), not a linear haircut on recoverable** — more defensible to a CFO, and makes the
+Golden Thread exact. Updated S50 reconciliation tests accordingly (build→test→error→fix→test).
+
+**Executed here:** `tests/functional/workiq.test.ts` (12) + `tests/unit/reconciliation.test.ts` (18,
+updated) — **28 tests, 100% on all four metrics**. MOAT proof green: blind 0 vs sighted 1, exact £1,200.00.
+
+**Loop state:** S52 ✅ → next S53 (remediation/action-layer.ts + api/platform.ts).

@@ -448,7 +448,7 @@ breakdown — the depth is visible, not buried in libraries. S0–S46 complete.
 |---|---|---|---|---|
 | S47 | Foundation: money taxonomy | Built `src/money/money.ts` — integer minor units; money/add/subtract/compare/equals/isZero/negate/applyPercentage/multiplyByQuantity/convertFx/allocate/sum/toDecimal/fromDecimal/format; currency + integer guards. | ✅ executed here | 28 |
 | S48 | Foundation: domain model | Built `src/core/model.ts` — Customer/Contract/ContractTerm/Invoice/InvoiceLine/Renewal/CommercialIntentEvent/VarianceFinding/LeakageCase + LeakageType/CaseStatus/TwinState/Decision + CASE_TRANSITIONS/canTransition/isTerminal. | ✅ executed here | 7 |
-| S49 | Foundation: audit hash-chain | Build `src/core/audit.ts` — `AuditEntry`, `AuditLog`, SHA-256 chain, `verifyChain`, `GENESIS_HASH`. | ⬜ planned | — |
+| S49 | Foundation: audit hash-chain | Built `src/core/audit.ts` — AuditEntry, AuditLog (append/all/headHash/length/verifyChain), SHA-256 chain, hashEntry, GENESIS_HASH, injectable clock. | ✅ executed here | 12 |
 | S50 | Foundation: reconciliation core | Build `src/core/reconciliation.ts` — `createCase`, `rankCases`, net-recoverable legal model, dedup. The deterministic decider. | ⬜ planned | — |
 | S51 | Foundation: twin state machine | Build `src/core/twin.ts` — 8-state machine + audited transitions consumed by Explorer/lifecycle. | ⬜ planned | — |
 | S52 | Foundation: Work IQ moat | Build `src/intent/workiq.ts` — commercial-intent loop, blind-vs-sighted recall, confidence gating. The moat. | ⬜ planned | — |

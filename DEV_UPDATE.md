@@ -59,3 +59,16 @@ every consumer (normalize.ts builders, application.ts, reconciliation callsites,
 **Executed here:** `tests/unit/model.test.ts` — **7 tests, 100% on all four metrics**.
 
 **Loop state:** S48 BUILD ✅ → COMMIT → PUSH → TEST ✅ → next S49 (core/audit.ts).
+
+---
+
+## 2026-06-12 — S49 ✅ audit hash-chain (foundation)
+
+**Built:** `src/core/audit.ts` — `AuditEntry`, `AuditLog` (injectable clock; `append`/`all`/
+`headHash`/`length`/`verifyChain`), `hashEntry`, `GENESIS_HASH`. SHA-256 chain identical to the
+persistence adapters' recompute, so in-process verification and durable storage agree. Tamper of
+detail, prevHash, or seq all fail `verifyChain`.
+
+**Executed here:** `tests/unit/audit.test.ts` — **12 tests, 100% on all four metrics**.
+
+**Loop state:** S49 ✅ → next S50 (core/reconciliation.ts — the deterministic decider).

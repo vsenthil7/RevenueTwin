@@ -9,8 +9,8 @@
  */
 import { once } from 'node:events';
 import type { AddressInfo } from 'node:net';
-import { bootstrap, northwindFindings } from '../src/app/bootstrap.ts';
-import { createApiServer } from '../src/app/server.ts';
+import { bootstrap, northwindFindings } from './bootstrap.ts';
+import { createApiServer } from './server.ts';
 
 function assert(cond: boolean, msg: string): void {
   if (!cond) { console.error(`❌ ${msg}`); process.exit(1); }

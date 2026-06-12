@@ -68,7 +68,7 @@ export function buildEvidencePack(args: {
   }
   const caseSummaries: EvidenceCaseSummary[] = args.cases.map((c) => ({
     caseId: c.id, customerId: c.customerId, status: c.status,
-    netRecoverableMajor: caseNetMajor(c), detectedViaWorkIQ: c.detectedViaWorkIQ,
+    netRecoverableMajor: caseNetMajor(c), detectedViaWorkIQ: c.detectedViaWorkIQ ?? false,
   }));
   const totalRecoverableMajor = caseSummaries.reduce((s, c) => s + c.netRecoverableMajor, 0);
   const auditHeadHash = args.auditEntries.length === 0

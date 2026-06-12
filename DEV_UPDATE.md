@@ -138,3 +138,20 @@ webhook subscription management.
 **Foundation milestone:** all 7 missing foundation modules (money, model, audit, reconciliation,
 twin, workiq+golden-thread, action-layer+platform) now exist and are individually 100%-covered.
 **Loop state:** S53 ✅ → next S54 (compile-green sweep: `tsc --noEmit` clean across the WHOLE tree).
+
+---
+
+## 2026-06-12 — S54 ✅ compile-green sweep
+
+**Done:** `npx tsc -p tsconfig.json --noEmit` now reports **0 errors** across the whole assembled
+tree (it began at hundreds — all the missing-foundation imports). After S47–S53 supplied the
+foundation, only 3 residual errors remained, all in delivered files:
+- `src/app/demo-live.ts` imported `../src/app/bootstrap.ts` / `../src/app/server.ts` (wrong relative
+  path now that it lives in src/app) → fixed to `./bootstrap.ts` / `./server.ts`.
+- `src/evidence/evidence-pack.ts` assigned `detectedViaWorkIQ: c.detectedViaWorkIQ` (now optional
+  `boolean | undefined`) into a `boolean` field → coerced with `?? false`.
+
+**Executed here:** full suite `node --test tests/unit/*.test.ts tests/functional/*.test.ts` —
+**110 tests, 0 fail**. The codebase compiles and the foundation + delivered modules interoperate.
+**Loop state:** S54 ✅ → next S55 (unit pyramid pt.1: tests for persistence/identity/intent-
+extraction/connectors/billing to 100%).

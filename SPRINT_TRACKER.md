@@ -410,3 +410,61 @@ remains isolatable at £1,200 / 100% attributable.
 12 jsdom UI tests (incl. dashboard). Offline demo + live HTTP demo both green. `src/app/**` at 100%.
 The product now opens to a CFO dashboard showing recoverable, forecast, benchmark, ROI, and leakage
 breakdown — the depth is visible, not buried in libraries. S0–S46 complete.
+
+---
+
+## Sprint block R — Reconstruction & Production-Hardening (S47–S62)
+
+> **Why this block exists (honest status correction).** A buyer-readiness re-audit of the
+> *delivered repository* (not the prior session's claims) found that what shipped in the V01–V12
+> build-prompt zips was a **partial export**: ~48 domain `.ts/.js` files only. The foundational
+> modules they all import — `money/money.ts`, `core/model.ts`, `core/audit.ts`,
+> `core/reconciliation.ts`, `core/golden-thread.ts`, `core/twin.ts`, `intent/workiq.ts`,
+> `remediation/action-layer.ts`, `api/platform.ts` — were **absent**, as were ALL tests, the
+> `web/`, `mobile/`, `scripts/`, and `docs/` trees. Consequence: the repo as delivered **does not
+> compile or run**, and the "395 tests, 100% coverage" recorded in earlier blocks is **not
+> reproducible in this repository**. This block rebuilds the missing foundation, assembles the real
+> `src/` tree, closes the named production gaps (postgres-default, real auth seam, runnable layout),
+> and re-establishes the full test pyramid at 100% — *with every number executed and committed here*,
+> not asserted. **No scope is shrunk: every module already present is kept and wired; depth and
+> breadth are added.**
+
+**Definition of Done (every sprint in this block):**
+1. Module(s) built or wired into `src/<area>/`.
+2. `npm run typecheck` (`tsc --noEmit`) clean.
+3. Tests written in `tests/unit|functional|negative/` — **100% line/branch/function/statement**.
+4. Coverage gate (`npm run test:coverage`) green **executed here**.
+5. SPRINT_TRACKER.md + TRACEABILITY.md + DEV_UPDATE.md updated.
+6. Clean git commit → push.
+7. Loop: **build → commit → push → test → (error? → build → commit → push → test) → next.**
+
+**Coverage targets (the contract for this block):**
+- Backend unit + functional + negative: **100%** across all four c8 metrics.
+- Frontend web (jsdom, executes here): **100%** of `web/*.js` logic.
+- Playwright E2E (web desktop + mobile viewports): suite green in CI; specs discovered + valid here.
+- Flutter mobile: unit + widget tests; green in CI (no SDK here) — logic mirrored by jsdom proof.
+
+| Sprint | Title | Scope (no shrink — additive) | Status | Tests |
+|---|---|---|---|---|
+| S47 | Foundation: money taxonomy | Build `src/money/money.ts` — integer minor units, `money/add/sub/compare/toDecimal/fromDecimal/allocate`, currency guards. The dependency 23 files import. | ⬜ planned | — |
+| S48 | Foundation: domain model | Build `src/core/model.ts` — `LeakageCase`, `CaseStatus`, `LeakageType`, `Decision`, `VarianceFinding`, `CommercialIntentEvent`, `TwinState`, `Customer`, `Contract`, `ContractTerm`, `Invoice`, `InvoiceLine`. | ⬜ planned | — |
+| S49 | Foundation: audit hash-chain | Build `src/core/audit.ts` — `AuditEntry`, `AuditLog`, SHA-256 chain, `verifyChain`, `GENESIS_HASH`. | ⬜ planned | — |
+| S50 | Foundation: reconciliation core | Build `src/core/reconciliation.ts` — `createCase`, `rankCases`, net-recoverable legal model, dedup. The deterministic decider. | ⬜ planned | — |
+| S51 | Foundation: twin state machine | Build `src/core/twin.ts` — 8-state machine + audited transitions consumed by Explorer/lifecycle. | ⬜ planned | — |
+| S52 | Foundation: Work IQ moat | Build `src/intent/workiq.ts` — commercial-intent loop, blind-vs-sighted recall, confidence gating. The moat. | ⬜ planned | — |
+| S53 | Foundation: action layer + platform | Build `src/remediation/action-layer.ts` (idempotent reversible) + `src/api/platform.ts` (`ConnectorCategory`, registry, health/mode). | ⬜ planned | — |
+| S54 | Compile-green sweep | `tsc --noEmit` clean across the ENTIRE assembled tree; fix every import/type mismatch surfaced by reconnecting the 48 modules to the new foundation. | ⬜ planned | — |
+| S55 | Unit test pyramid pt.1 | Unit tests for money/core/persistence/identity/intent/connectors/billing — 100% on those modules, executed here. | ⬜ planned | — |
+| S56 | Unit test pyramid pt.2 | Unit tests for the 30+ revenue-domain modules (consolidation→alerts) — 100%, executed here. | ⬜ planned | — |
+| S57 | Functional suite | `tests/functional/` — every documented user flow end-to-end through `RevenueTwinApp` (open→triage→approve→writeback→audit; Work IQ blind-vs-sighted; period close; ROI). 100%. | ⬜ planned | — |
+| S58 | Negative suite | `tests/negative/` — every failure & adversarial path: RBAC 403, customer-scope denial, SoD, malformed input, injection-as-data, audit-tamper rejection, idempotency, persistence contract violations. 100%. | ⬜ planned | — |
+| S59 | Production gap: postgres-default | Wire `pg.Pool` edge in `src/app/bootstrap.ts`; `DATABASE_URL` selects Postgres, memory only when explicitly demo/test. Schema migration script. Document the swap. | ⬜ planned | — |
+| S60 | Production gap: real auth seam | Replace `x-user-id` shim with a `verifyToken` seam (OIDC/Entra JWT verification interface) + a dev token issuer for offline; RBAC downstream unchanged. Tests for valid/expired/forged tokens. | ⬜ planned | — |
+| S61 | Front end — web control room | Assemble `web/` (control room + CFO dashboard + live API hydration) and `tests/e2e/*.jsdom.test.ts` (100% of web logic, executes here) + `tests/e2e/*.pw.spec.ts` (Playwright desktop+mobile viewports). | ⬜ planned | — |
+| S62 | Front end — Flutter mobile | Assemble `mobile/` Flutter app (CFO portfolio, case triage, approval inbox) mirroring web logic + unit & widget tests (CI-executed). Wire mobile-test CI job. | ⬜ planned | — |
+
+### Sprint block R — exit criteria
+- `make ci-local` green here: `tsc` clean, **100%/100%/100%/100%** backend coverage, jsdom green, offline demo green.
+- Playwright + Flutter jobs valid and green in GitHub Actions CI.
+- KNOWN_GAPS.md reduced to only genuinely-deferred items (managed-service ops, live IdP tenant config), each with its seam named.
+- Every sprint row above flipped to ✅ with its **executed-here** test count.

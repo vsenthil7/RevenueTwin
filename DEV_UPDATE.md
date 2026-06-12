@@ -45,3 +45,17 @@ mismatch and non-integer guards throw `MoneyError`.
 **Baseline tsc note:** full-tree `tsc` still red — expected; remaining errors are the not-yet-built
 foundation (core/model, core/audit, core/reconciliation, core/golden-thread, intent/workiq,
 remediation/action-layer, api/platform) + a few implicit-any spots in delivered files cleared in S54.
+
+---
+
+## 2026-06-12 — S48 ✅ core domain model (foundation)
+
+**Built:** `src/core/model.ts` — entities (Customer, Contract, ContractTerm, Invoice, InvoiceLine,
+Renewal), the Work IQ `CommercialIntentEvent`, `VarianceFinding`, `LeakageCase`, the enums
+(`LeakageType`, `CaseStatus`, `TwinState`, `Decision`), and the lifecycle helpers
+`CASE_TRANSITIONS` / `canTransition` / `isTerminal`. Field shapes reverse-engineered to match
+every consumer (normalize.ts builders, application.ts, reconciliation callsites, forecast Renewal).
+
+**Executed here:** `tests/unit/model.test.ts` — **7 tests, 100% on all four metrics**.
+
+**Loop state:** S48 BUILD ✅ → COMMIT → PUSH → TEST ✅ → next S49 (core/audit.ts).

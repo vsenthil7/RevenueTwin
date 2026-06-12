@@ -18,7 +18,7 @@ could not compile until their imports existed; Block R wires and tests them.
 
 | Req ID | Requirement | Module | Sprint | Test artifact | Status |
 |---|---|---|---|---|---|
-| F-01 | Money is exact integer minor units; no float drift | `src/money/money.ts` | S47 | `tests/unit/money.test.ts` | ⬜ |
+| F-01 | Money is exact integer minor units; no float drift | `src/money/money.ts` | S47 | `tests/unit/money.test.ts` (28 tests, 100%) | ✅ |
 | F-02 | Canonical revenue domain model | `src/core/model.ts` | S48 | `tests/unit/model.test.ts` | ⬜ |
 | F-03 | Tamper-evident append-only audit (SHA-256 chain) | `src/core/audit.ts` | S49 | `tests/unit/audit.test.ts` | ⬜ |
 | F-04 | Deterministic reconciliation decides pass/fail (never an LLM) | `src/core/reconciliation.ts` | S50 | `tests/unit/reconciliation.test.ts` | ⬜ |

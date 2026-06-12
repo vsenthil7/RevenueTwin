@@ -446,7 +446,7 @@ breakdown — the depth is visible, not buried in libraries. S0–S46 complete.
 
 | Sprint | Title | Scope (no shrink — additive) | Status | Tests |
 |---|---|---|---|---|
-| S47 | Foundation: money taxonomy | Build `src/money/money.ts` — integer minor units, `money/add/sub/compare/toDecimal/fromDecimal/allocate`, currency guards. The dependency 23 files import. | ⬜ planned | — |
+| S47 | Foundation: money taxonomy | Built `src/money/money.ts` — integer minor units; money/add/subtract/compare/equals/isZero/negate/applyPercentage/multiplyByQuantity/convertFx/allocate/sum/toDecimal/fromDecimal/format; currency + integer guards. | ✅ executed here | 28 |
 | S48 | Foundation: domain model | Build `src/core/model.ts` — `LeakageCase`, `CaseStatus`, `LeakageType`, `Decision`, `VarianceFinding`, `CommercialIntentEvent`, `TwinState`, `Customer`, `Contract`, `ContractTerm`, `Invoice`, `InvoiceLine`. | ⬜ planned | — |
 | S49 | Foundation: audit hash-chain | Build `src/core/audit.ts` — `AuditEntry`, `AuditLog`, SHA-256 chain, `verifyChain`, `GENESIS_HASH`. | ⬜ planned | — |
 | S50 | Foundation: reconciliation core | Build `src/core/reconciliation.ts` — `createCase`, `rankCases`, net-recoverable legal model, dedup. The deterministic decider. | ⬜ planned | — |

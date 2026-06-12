@@ -27,3 +27,21 @@ here**. Block R reconstructs and proves everything in-repo.
 `tests/unit/money.test.ts` at 100% coverage; then commit → push → test → fix → S48.
 
 **Loop state:** PLAN ✅ → next is BUILD(S47).
+
+---
+
+## 2026-06-12 — S47 ✅ money taxonomy (foundation)
+
+**Built:** `src/money/money.ts` — the module 23 files import. Exact integer minor units; `add`,
+`subtract`, `compare`, `equals`, `isZero`, `negate`, `applyPercentage` (percent units, half-away-
+from-zero), `multiplyByQuantity`, `convertFx` (with rate-currency guard), `allocate` (largest-
+remainder, exact sum, sign-preserving), `sum`, `toDecimal`/`fromDecimal`, `format`. Currency-
+mismatch and non-integer guards throw `MoneyError`.
+
+**Executed here:** `tests/unit/money.test.ts` — **28 tests, 100% line/branch/function/statement**
+(c8 gate `--branches 100 --lines 100 --functions 100 --statements 100`, passed).
+
+**Loop state:** BUILD(S47) ✅ → COMMIT → PUSH → TEST ✅ → next BUILD(S48 core/model.ts).
+**Baseline tsc note:** full-tree `tsc` still red — expected; remaining errors are the not-yet-built
+foundation (core/model, core/audit, core/reconciliation, core/golden-thread, intent/workiq,
+remediation/action-layer, api/platform) + a few implicit-any spots in delivered files cleared in S54.

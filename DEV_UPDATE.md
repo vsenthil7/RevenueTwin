@@ -155,3 +155,21 @@ foundation, only 3 residual errors remained, all in delivered files:
 **110 tests, 0 fail**. The codebase compiles and the foundation + delivered modules interoperate.
 **Loop state:** S54 ✅ → next S55 (unit pyramid pt.1: tests for persistence/identity/intent-
 extraction/connectors/billing to 100%).
+
+---
+
+## 2026-06-12 — S55 🔄 unit pyramid pt.1 (persistence done)
+
+**Built:** `tests/unit/persistence.test.ts` — exercises both adapters at **100% on all four metrics**.
+Memory adapter: audit chain enforcement (seq gap, prevHash break, hash tamper), case tenant-scoping
++ query-by-customer/status, twin state+history, snapshot/rollback transaction (cases AND twins).
+Postgres adapter driven by a faithful in-memory `PgClient` SQL-dispatcher fake: append/all/headHash/
+exportPeriod/verifyChain, case CRUD with JSON payload round-trip, twin ordering, BEGIN/COMMIT/ROLLBACK,
+and the object-column branches (driver may return parsed objects).
+
+**Loop caught a test bug:** the fake's `id=$2` matcher also matched `customer_id=$2` (substring) —
+fixed to `AND id=$2`. Then chased branch coverage from 90%→100% with targeted prevHash-break,
+hash-tamper, twin-history-default, and object-payload cases.
+
+**Executed here:** persistence **19 tests, 100%**. Full suite now **133 tests, tsc 0 errors**.
+**Loop state:** S55 part 1 ✅ (persistence) → continuing S55 with rbac/extraction/connectors/billing.

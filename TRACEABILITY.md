@@ -31,9 +31,9 @@ could not compile until their imports existed; Block R wires and tests them.
 
 | Req ID | Requirement | Module | Sprint | Test artifact | Status |
 |---|---|---|---|---|---|
-| P-01 | Storage-agnostic repository contracts | `src/persistence/repository.ts` | S13→S55 | `tests/unit/persistence.test.ts` | ⬜ (present, unwired) |
-| P-02 | In-memory adapter (pilots/tests/demo) | `src/persistence/memory-adapter.ts` | S13→S55 | `tests/unit/persistence.test.ts` | ⬜ (present, unwired) |
-| P-03 | Postgres adapter, tenant-scoped, append-only DB trigger | `src/persistence/postgres-adapter.ts` | S13→S55 | `tests/unit/persistence.test.ts` | ⬜ (present, unwired) |
+| P-01 | Storage-agnostic repository contracts | `src/persistence/repository.ts` | S13→S55 | `tests/unit/persistence.test.ts` (19, 100%) | ✅ |
+| P-02 | In-memory adapter (pilots/tests/demo) | `src/persistence/memory-adapter.ts` | S13→S55 | `tests/unit/persistence.test.ts` | ✅ |
+| P-03 | Postgres adapter, tenant-scoped, append-only DB trigger | `src/persistence/postgres-adapter.ts` | S13→S55 | `tests/unit/persistence.test.ts` | ✅ |
 | P-04 | **Postgres is the default in production** | `src/app/bootstrap.ts` | S59 | `tests/functional/persistence-default.test.ts` | ⬜ |
 
 ## 3. Identity, authZ, authN

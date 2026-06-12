@@ -102,7 +102,12 @@ export type LeakageType =
   | 'escalator_changed'
   | 'usage_overage'
   | 'tax'
-  | 'recognition';
+  | 'recognition'
+  | 'missed_escalator'
+  | 'expired_discount'
+  | 'unbilled_usage'
+  | 'dunning_gap'
+  | 'pricing_config';
 
 /**
  * One variance the reconciliation engine found — the atomic unit of leakage. `netRecoverable`
@@ -121,6 +126,10 @@ export interface VarianceFinding {
   readonly expected?: Money;
   /** Actual (billed) value. */
   readonly actual?: Money;
+  /** Gross detected variance before the net-recoverable legal model. */
+  readonly grossDetected?: Money;
+  /** Detection confidence, 0..1. */
+  readonly confidence?: number;
 }
 
 /** The revenue-twin lifecycle states (8-state machine). */

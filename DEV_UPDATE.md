@@ -72,3 +72,19 @@ detail, prevHash, or seq all fail `verifyChain`.
 **Executed here:** `tests/unit/audit.test.ts` — **12 tests, 100% on all four metrics**.
 
 **Loop state:** S49 ✅ → next S50 (core/reconciliation.ts — the deterministic decider).
+
+---
+
+## 2026-06-12 — S50 ✅ reconciliation core (the deterministic decider)
+
+**Built:** `src/core/reconciliation.ts` — the net-recoverable legal model (gross = max(expected−
+actual,0), decayed linearly to zero over a 6-year statute window, scaled by confidence × contract
+strength), `buildFinding` (null when nothing recoverable — no empty cases), `createCase`
+(id-dedup, starts 'open'), `rankCases` (net desc, stable tie-break via localeCompare),
+`caseNetRecoverable`. Every number is a total deterministic function — engines decide, LLMs explain.
+**Model extended (additive):** `VarianceFinding` gained `grossDetected`/`confidence`; `LeakageType`
+gained the 5 portfolio categories bootstrap uses. No scope shrink.
+
+**Executed here:** `tests/unit/reconciliation.test.ts` — **18 tests, 100% on all four metrics**.
+
+**Loop state:** S50 ✅ → next S51 (core/twin.ts — 8-state machine).

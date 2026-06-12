@@ -21,7 +21,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | F-01 | Money is exact integer minor units; no float drift | `src/money/money.ts` | S47 | `tests/unit/money.test.ts` (28 tests, 100%) | ✅ |
 | F-02 | Canonical revenue domain model | `src/core/model.ts` | S48 | `tests/unit/model.test.ts` (7, 100%) | ✅ |
 | F-03 | Tamper-evident append-only audit (SHA-256 chain) | `src/core/audit.ts` | S49 | `tests/unit/audit.test.ts` (12, 100%) | ✅ |
-| F-04 | Deterministic reconciliation decides pass/fail (never an LLM) | `src/core/reconciliation.ts` | S50 | `tests/unit/reconciliation.test.ts` | ⬜ |
+| F-04 | Deterministic reconciliation decides pass/fail (never an LLM) | `src/core/reconciliation.ts` | S50 | `tests/unit/reconciliation.test.ts` (18, 100%) | ✅ |
 | F-05 | 8-state revenue-twin machine, audited transitions | `src/core/twin.ts` | S51 | `tests/unit/twin.test.ts` | ⬜ |
 | F-06 | Work IQ commercial-intent moat; blind-vs-sighted recall delta | `src/intent/workiq.ts` | S52 | `tests/functional/workiq.test.ts` | ⬜ |
 | F-07 | Idempotent reversible action layer | `src/remediation/action-layer.ts` | S53 | `tests/unit/action-layer.test.ts` | ⬜ |

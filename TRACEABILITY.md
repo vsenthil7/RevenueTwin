@@ -55,13 +55,13 @@ could not compile until their imports existed; Block R wires and tests them.
 | D-06 | Multi-currency consolidation | `src/consolidation/fx-consolidation.ts` | S21→S56 | `tests/unit/fx-consolidation.test.ts` (8, 100%) | ✅ |
 | D-07 | Forecasting & at-risk revenue | `src/forecasting/forecast.ts` | S22→S56 | `tests/unit/forecast.test.ts` (12, 100%) | ✅ |
 | D-08 | Anomaly detection (z-score + MAD) | `src/anomaly/detection.ts` | S23→S56 | `tests/unit/anomaly.test.ts` (13, 100%) | ✅ |
-| D-09 | Dispute & negotiation management | `src/disputes/negotiation.ts` | S24→S56 | ⬜ (present, unwired) |
+| D-09 | Dispute & negotiation management | `src/disputes/negotiation.ts` | S24→S56 | `tests/unit/negotiation.test.ts` (10, 100%) | ✅ |
 | D-10 | Approval policy engine | `src/policy/approval-policy.ts` | S25→S56 | `tests/unit/approval-policy.test.ts` (6, 100%) | ✅ |
-| D-11 | Observability & operational metrics | `src/observability/metrics.ts` | S26→S56 | ⬜ (present, unwired) |
+| D-11 | Observability & operational metrics | `src/observability/metrics.ts` | S26→S56 | `tests/unit/metrics.test.ts` (10, 100%) | ✅ |
 | D-12 | Data quality & lineage scoring | `src/dataquality/scoring.ts` | S27→S56 | `tests/unit/dataquality.test.ts` (10, 100%) | ✅ |
 | D-13 | Tenant config & entitlements | `src/tenancy/config.ts` | S28→S56 | `tests/unit/tenancy.test.ts` (10, 100%) | ✅ |
-| D-14 | Usage / consumption billing | `src/usage/consumption.ts` | S29→S56 | ⬜ (present, unwired) |
-| D-15 | Contract amendment diffing | `src/amendments/diff.ts` | S30→S56 | ⬜ (present, unwired) |
+| D-14 | Usage / consumption billing | `src/usage/consumption.ts` | S29→S56 | `tests/unit/consumption.test.ts` (15, 100%) | ✅ |
+| D-15 | Contract amendment diffing | `src/amendments/diff.ts` | S30→S56 | `tests/unit/amendments.test.ts` (8, 100%) | ✅ |
 | D-16 | Peer benchmarking | `src/benchmarking/peer-benchmark.ts` | S31→S56 | ⬜ (present, unwired) |
 | D-17 | Evidence pack generation | `src/evidence/evidence-pack.ts` | S32→S56 | ⬜ (present, unwired) |
 | D-18 | Scheduler (recurring jobs, backoff) | `src/scheduler/scheduler.ts` | S33→S56 | ⬜ (present, unwired) |

@@ -238,3 +238,21 @@ series), and a period-drop count that missed the 40→0 cliff. Fixed both; full 
   consume with limit refusal (connectors/users/cases), monthly reset, settings fallback, cumulative tiers.
 
 **Executed here:** 34 tests. Full suite **261 green, tsc 0**. **Loop state:** S56 batch 3 ✅ → 17 modules left.
+
+---
+
+## 2026-06-12 — S56 🔄 batch 4: disputes + metrics + usage + amendments
+
+**Built tests (100% all four metrics):**
+- `negotiation.test.ts` (10) — dispute lifecycle transitions, offer recording + bounds, latest-offer,
+  negotiation gap (floored), settlement split + recovery rate, age, portfolio aggregation.
+- `metrics.test.ts` (10) — percentile (single/exact/interpolated/bounds), latency + MTTR (open/resolved/
+  empty), SLA attainment, queue depth as-of, recovery velocity.
+- `consumption.test.ts` (15) — tiered graduation + bounded-tier overflow, volume landing tier, tier
+  validation, true-up overage/shortfall, burst, expected-consumption, leakage, commitment discount.
+- `amendments.test.ts` (8) — term diff (added/removed/price/qty/escalator/unchanged precedence),
+  annual vs monthly impact, currency-change guard, material changes, net impact, billing gap.
+
+**Loop fixed two test bugs:** invalid `0_50` numeric literal (leading-zero separator), and a true-up
+overage assertion that ignored tiered graduation. Full suite **303 green, tsc 0**.
+**Loop state:** S56 batch 4 ✅ → 13 modules left.

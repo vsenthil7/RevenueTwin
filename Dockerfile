@@ -23,7 +23,6 @@ ENV NODE_ENV=production
 ENV PORT=8787
 EXPOSE 8787
 
-HEALTHCHECK --interval=30s --timeout=4s --start-period=10s --retries=3 \\
-  CMD curl -fsS http://127.0.0.1:8787/api/health || exit 1
+HEALTHCHECK --interval=30s --timeout=4s --start-period=10s --retries=3 CMD curl -fsS http://127.0.0.1:8787/api/health || exit 1
 
 CMD ["npm", "start"]

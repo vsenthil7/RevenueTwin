@@ -442,3 +442,27 @@ Refactor: moved the browser auto-mount block out of app.js into main.js so app.j
 functions/branches (the typeof-window guard was otherwise unreachable under the node runner).
 
 Suite 561 tests (534 backend + 27 jsdom), 0 fail, tsc 0. src tree still 100/100/100/100.
+
+
+---
+
+## 2026-06-13 - S62 DONE: Flutter mobile app assembled + tests (Block R complete)
+
+Assembled mobile/ (Flutter):
+- Pure domain (no Flutter imports, unit-testable): models/leakage_case.dart (LeakageCase.fromJson
+  mirroring web mapCase + fmtGBP with thousands separators, money in integer minor units),
+  api/client.dart (RevenueTwinClient over an injectable Transport: cases/portfolio/decide),
+  inbox_state.dart (pending, recoveredMinor, workIQShare, approve/reject).
+- Flutter UI: main.dart (3-tab shell: Portfolio/Triage/Approvals), screens/{portfolio,triage,
+  approvals}_screen.dart with testable *View widgets that take pre-loaded data, screens/widgets.dart
+  (CaseTile). pubspec.yaml (flutter, http, flutter_test, flutter_lints).
+- Tests: test/domain_test.dart (fmtGBP + fromJson), api_test.dart (client mapping/sort/decide path),
+  inbox_state_test.dart (hydrate/pending/recovered/share, approve+reject), widget_test.dart
+  (PortfolioView totals, TriageView list+select+empty, ApprovalsView recovered+approve/reject). 11 tests.
+
+CI: the existing mobile-flutter job (flutter pub get / analyze / test) now has real code to run.
+Validated offline: all 12 Dart files balance braces/parens; every symbol referenced by tests
+resolves to a lib declaration. flutter test itself is CI-only (no Dart SDK in this sandbox) -
+ documented in KNOWN_GAPS, same honest pattern as Playwright.
+
+Backend unaffected: suite 561 green, tsc 0, src tree 100/100/100/100. Block R (S47-S62) complete.

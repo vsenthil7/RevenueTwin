@@ -60,3 +60,18 @@ equivalent executed proof is named.
  network-blocked here (same constraint documented for the other products). Run in CI with
  `npx playwright install chromium && npm run test:e2e`.
 - `web/main.js` is the browser entrypoint (logic-free) so `app.js` stays fully unit-testable.
+
+
+## Mobile app (S62)
+
+
+- The Flutter app (`mobile/`) has a pure-Dart domain layer (models, API client with injectable
+ transport, inbox state) that is fully unit-testable, plus flutter_test widget tests for the three
+ views. Symbol/structure validated in the offline build (brace + paren balance, every test symbol
+ resolves to a lib declaration).
+- `flutter test` / `flutter analyze` run in CI via the `mobile-flutter` job; they do NOT run in the
+ offline build sandbox because there is no Dart/Flutter SDK here (analogous to the Playwright
+ browser-binary constraint).
+- The mobile API client targets the same REST surface as the web console; the live screens
+ (PortfolioScreen/TriageScreen/ApprovalsScreen) are thin wrappers to be wired to the client at run
+ time, while the testable *View widgets take pre-loaded data so they are deterministic.

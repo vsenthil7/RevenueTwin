@@ -93,7 +93,7 @@ could not compile until their imports existed; Block R wires and tests them.
 |---|---|---|---|---|---|
 | W-01 | Web control room + CFO dashboard, live API hydration | `web/index.html`, `web/app.js`, `web/api.js`, `web/main.js` | S61 | `tests/e2e/web.jsdom.test.ts` (27, 100%) | OK |
 | W-02 | Playwright E2E — desktop + mobile viewports | `tests/e2e/*.pw.spec.ts` | S61 | Playwright (CI) | ⬜ |
-| M-01 | Flutter mobile app (portfolio, triage, approvals) | `mobile/**` | S62 | `mobile/test/**` (CI) | ⬜ |
+| M-01 | Flutter mobile app (portfolio, triage, approvals) | `mobile/lib/**` | S62 | `mobile/test/{domain,api,inbox_state,widget}_test.dart` (11, CI) | OK (assembled + validated) |
 
 ## 7. Testing automation contract
 
@@ -104,5 +104,5 @@ could not compile until their imports existed; Block R wires and tests them.
 | T-03 | Negative coverage of failure/adversarial paths | S58 | OK (`tests/negative/` 27: tamper, RBAC 403/scope, malformed/injection, HTTP 400/403/404/500) |
 | T-04 | Front-end (web) logic coverage 100% via jsdom (executes here) | S61 | OK (api.js + app.js 100/100/100/100, 27 tests) |
 | T-05 | Playwright web E2E green in CI | S61 | CI-only (`tests/playwright/control-room.spec.ts`; needs browser binary, blocked offline) |
-| T-06 | Flutter mobile tests green in CI | S62 | ⬜ |
+| T-06 | Flutter mobile tests green in CI | S62 | CI-only (mobile-flutter job: flutter analyze + test; no Dart SDK offline) |
 | T-07 | `make ci-local` green here (tsc + 100% + jsdom + offline demo) | S62 | ⬜ |

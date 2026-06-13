@@ -136,6 +136,12 @@ export async function handleApi(
     const ev = await app.ingestIntent(principal, new RuleBasedExtractor(), b.doc, b.minConfidence ?? 0.6);
     return { status: 200, body: { event: ev } };
   }
+  if (method === 'POST' && path === '/api/import') {
+    const b = body as { csv?: unknown; at?: string };
+    if (typeof b.csv !== 'string' || b.csv.length === 0) throw new AppError('csv (non-empty string) is required');
+    const result = await app.importCsvCases(principal, b.csv, b.at);
+    return { status: 200, body: result };
+  }
   if (method === 'GET' && path === '/api/portfolio') {
     return { status: 200, body: await app.portfolioSummary(principal) };
   }

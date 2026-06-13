@@ -253,3 +253,19 @@ test('dispatch with undefined method on an api path uses GET default', async () 
   await dispatch(d, req, res);
   assert.equal(res._status, 200);
 });
+
+test('POST /api/import: cfo imports CSV over the handler -> 200 + recoverable total', async () => {
+  const d = await deps();
+  const csv = ['customer,line_id,type,expected,actual,currency', 'acme,INV-1,price_changed,12000,10800,GBP'].join('\n');
+  const r = await handleApi(d, 'POST', '/api/import', Q(), { csv, at: '2026-04-02T00:00:00.000Z' }, fakeReq({ 'x-user-id': 'cfo' }, 'POST'));
+  assert.equal(r.status, 200);
+  const body = r.body as { totalRecoverable: { amount: number }; cases: unknown[] };
+  assert.equal(body.cases.length, 1);
+  assert.ok(body.totalRecoverable.amount > 0);
+});
+
+test('POST /api/import: missing/empty csv is a 400-class AppError', async () => {
+  const d = await deps();
+  await assert.rejects(() => handleApi(d, 'POST', '/api/import', Q(), {}, fakeReq({ 'x-user-id': 'cfo' }, 'POST')), /csv .* is required/);
+  await assert.rejects(() => handleApi(d, 'POST', '/api/import', Q(), { csv: '' }, fakeReq({ 'x-user-id': 'cfo' }, 'POST')), /csv .* is required/);
+});

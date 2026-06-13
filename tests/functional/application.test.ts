@@ -254,3 +254,51 @@ test('init() on an empty store is a no-op', async () => {
   const cfo = seedUsers().authenticate('cfo');
   assert.equal(await app.auditIntact(cfo), true);
 });
+
+const IMPORT_HEADER = 'customer,line_id,type,expected,actual,currency,confidence,age_days,name';
+
+test('importCsvCases: cfo imports CSV -> real cases persisted + audited', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  const csv = [IMPORT_HEADER,
+    'acme,INV-1,price_changed,12000,10800,GBP,0.95,45,Q1',
+    'globex,INV-2,unbilled_usage,5000,0,GBP,0.85,20,API',
+  ].join('\n');
+  const r = await app.importCsvCases(cfo, csv, '2026-04-02T00:00:00.000Z');
+  assert.equal(r.cases.length, 2);
+  assert.ok(r.totalRecoverable.amount > 0);
+  // cases are actually persisted + listable through the app
+  const listed = await app.listCases(cfo);
+  assert.equal(listed.length, 2);
+  // and the import was audited (chain still verifies)
+  assert.equal(await app.auditIntact(cfo), true);
+});
+
+test('importCsvCases: default timestamp when at omitted', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  const csv = [IMPORT_HEADER, 'acme,INV-1,price_changed,12000,10800,GBP,0.95,45,Q1'].join('\n');
+  const r = await app.importCsvCases(cfo, csv);
+  assert.equal(r.cases.length, 1);
+});
+
+test('importCsvCases: non-triage role is denied', async () => {
+  const { app } = freshApp();
+  const noRead = { userId: 'x', roles: [], permissions: new Set<never>(), allowedCustomers: '*' as const };
+  const csv = [IMPORT_HEADER, 'acme,INV-1,price_changed,12000,10800,GBP,0.95,45,Q1'].join('\n');
+  await assert.rejects(() => app.importCsvCases(noRead, csv), /permission/);
+});
+
+test('importCsvCases: out-of-scope customers are skipped, in-scope persisted', async () => {
+  const { app, users } = freshApp();
+  const revops = users.authenticate('revops'); // scoped to northwind
+  const csv = [IMPORT_HEADER,
+    'northwind,INV-1,price_changed,12000,10800,GBP,0.95,45,in',
+    'acme,INV-2,price_changed,12000,10800,GBP,0.95,45,out',
+  ].join('\n');
+  const r = await app.importCsvCases(revops, csv, '2026-04-02T00:00:00.000Z');
+  // only the in-scope (northwind) case persisted; acme skipped as a reject
+  assert.equal(r.cases.length, 1);
+  assert.equal(r.cases[0]!.customerId, 'northwind');
+  assert.ok(r.rejects.some((x) => x.reason.includes('out of scope')));
+});

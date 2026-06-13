@@ -19,6 +19,7 @@ import { portfolioSummary, leakageByType, periodClosePack, type PortfolioSummary
 import { runQuery, type CaseQuery, type Page } from '../bulk/operations.ts';
 import { extractIntentEvent, type IntentExtractor, type IntentDocument } from '../intent/extraction.ts';
 import * as insights from './insights.ts';
+import { importCsv } from '../import/importer.ts';
 
 export class AppError extends Error {
   constructor(message: string, readonly code: 'forbidden' | 'not_found' | 'bad_request' = 'bad_request') {
@@ -87,6 +88,34 @@ export class RevenueTwinApp {
       await this.record('recon-agent', 'case.created', id, { findings: findings.length, detectedViaWorkIQ });
     });
     return withFlag;
+  }
+
+  /**
+   * Import a CSV of the buyer's own expected-vs-actual billing lines, run them through the real
+   * reconciliation engine, persist the resulting cases, and return the recoverable report. This is
+   * how a CFO sees THEIR leaked revenue rather than the seeded demo. Cases for out-of-scope
+   * customers are skipped (reported), never persisted, so scoping is preserved.
+   */
+  async importCsvCases(principal: AuthenticatedPrincipal, csv: string, at?: string): Promise<import('../import/importer.ts').ImportResult> {
+    requirePerm(principal, 'case:triage');
+    const now = at ?? new Date().toISOString();
+    const result = importCsv(csv, { now: () => now });
+    const persisted: LeakageCase[] = [];
+    const skipped: import('../import/importer.ts').ImportRowReject[] = [...result.rejects];
+    await this.uow.transaction(async () => {
+      for (const c of result.cases) {
+        if (!canAccessCustomer(principal, c.customerId)) {
+          skipped.push({ row: 0, reason: 'customer out of scope: ' + c.customerId });
+          continue;
+        }
+        const flagged: LeakageCase = { ...c, detectedViaWorkIQ: false };
+        await this.uow.cases.upsert(this.tenantId, flagged);
+        persisted.push(flagged);
+        await this.record('import-agent', 'case.imported', c.id, { customerId: c.customerId, findings: c.findings.length });
+      }
+    });
+    // Recompute totals over only the persisted (in-scope) cases.
+    return { ...result, cases: persisted, rowsRejected: skipped.length, rejects: skipped };
   }
 
   async getCase(principal: AuthenticatedPrincipal, caseId: string): Promise<LeakageCase> {

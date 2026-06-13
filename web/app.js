@@ -248,10 +248,3 @@ export async function mountLive(doc, deps) {
   render();
   return { state, render, loadDashboard, reload: async () => { await load(); render(); } };
 }
-
-// Auto-mount in a real browser. Try live mode; the probe handles fallback.
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  import('./api.js').then((api) => {
-    mountLive(document, { api, baseUrl: '', userId: 'cfo' }).catch(() => mount(document));
-  }).catch(() => mount(document));
-}

@@ -48,3 +48,15 @@ precisely what executed here versus what is written and runs in CI, so nothing i
 ## Nothing stubbed as passing
 No test is faked green. Where a layer couldn't execute in the sandbox, it is marked ⚠️ and the
 equivalent executed proof is named.
+
+
+## Web console (S61)
+
+
+- The web console (`web/`) is fully covered at the browser-logic level by jsdom tests
+ (`tests/e2e/web.jsdom.test.ts`, 27 tests, api.js + app.js at 100/100/100/100).
+- `tests/playwright/control-room.spec.ts` is a real-Chromium smoke that runs in CI but NOT in the
+ offline build sandbox, because the Playwright browser binary is fetched from a CDN that is
+ network-blocked here (same constraint documented for the other products). Run in CI with
+ `npx playwright install chromium && npm run test:e2e`.
+- `web/main.js` is the browser entrypoint (logic-free) so `app.js` stays fully unit-testable.

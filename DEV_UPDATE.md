@@ -415,3 +415,30 @@ unprovisioned-subject all 403). Suite 534 green, tsc 0, whole src (excl demo-liv
 Errors found & fixed: malformed-claims branch (auth.ts 73-74) needed a validly-signed token whose
 payload is valid base64url but not JSON - built one with node:crypto in the test; two implicit-any
 arrow params (TS7006) typed.
+
+
+---
+
+## 2026-06-13 - S61 DONE: web control room assembled + browser tests (web layer 100%)
+
+Assembled the web console:
+- web/index.html (control room: topbar, triage/dashboard tabs, leakage queue, Work IQ toggle,
+  recall bar, inspector) + web/styles.css (dark control-room theme).
+- web/main.js: logic-free browser entrypoint (so web/app.js stays fully unit-testable).
+- scripts/serve-web.ts: boots RevenueTwin (bootstrap + createApiServer) and serves web/ on :8787;
+  backs the Playwright webServer and local demo. Verified at runtime: /api/health ok, / serves the
+  console, /app.js 200.
+
+Tests:
+- tests/e2e/web.jsdom.test.ts (27): api.js (mapCase incl provenance + defaults, authHeaders,
+  createClient GET/POST + non-ok throw + global-fetch fallback + missing-fetch, probe, all 10
+  endpoints) and app.js (fmtGBP, visibleCases blind-vs-sighted, recallState, caseCardHTML,
+  dashboardHTML incl defaults, mount click/toggle, mountLive live hydration, approve/reject POST,
+  dashboard tab + reload). web/api.js + web/app.js = 100/100/100/100.
+- tests/playwright/control-room.spec.ts + playwright.config.ts: real-Chromium smoke, CI-only
+  (browser binary CDN blocked offline; documented in KNOWN_GAPS).
+
+Refactor: moved the browser auto-mount block out of app.js into main.js so app.js reaches 100%
+functions/branches (the typeof-window guard was otherwise unreachable under the node runner).
+
+Suite 561 tests (534 backend + 27 jsdom), 0 fail, tsc 0. src tree still 100/100/100/100.

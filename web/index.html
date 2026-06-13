@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RevenueTwin — Revenue Assurance Control Room</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">RevenueTwin <span class="sub">Revenue Assurance</span></div>
+    <div class="mode" data-testid="mode-pill">● LIVE</div>
+  </header>
+  <nav class="tabs">
+    <button data-testid="tab-triage" class="tab active">Triage</button>
+    <button data-testid="tab-dashboard" class="tab">CFO Dashboard</button>
+  </nav>
+  <main class="layout">
+    <section class="queue">
+      <div class="queue-head">
+        <h2>Leakage queue</h2>
+        <label class="toggle"><input type="checkbox" data-testid="workiq-toggle" checked /> Work IQ</label>
+      </div>
+      <div id="recall-bar" class="recall"></div>
+      <div data-testid="case-list" class="case-list"></div>
+    </section>
+    <section data-testid="inspector" class="inspector">
+      <div data-testid="inspector-body"></div>
+    </section>
+  </main>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

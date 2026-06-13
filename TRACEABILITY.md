@@ -91,7 +91,7 @@ could not compile until their imports existed; Block R wires and tests them.
 
 | Req ID | Requirement | Module | Sprint | Test artifact | Status |
 |---|---|---|---|---|---|
-| W-01 | Web control room + CFO dashboard, live API hydration | `web/app.js`, `web/api.js` | S61 | `tests/e2e/*.jsdom.test.ts` (100%, here) | ⬜ |
+| W-01 | Web control room + CFO dashboard, live API hydration | `web/index.html`, `web/app.js`, `web/api.js`, `web/main.js` | S61 | `tests/e2e/web.jsdom.test.ts` (27, 100%) | OK |
 | W-02 | Playwright E2E — desktop + mobile viewports | `tests/e2e/*.pw.spec.ts` | S61 | Playwright (CI) | ⬜ |
 | M-01 | Flutter mobile app (portfolio, triage, approvals) | `mobile/**` | S62 | `mobile/test/**` (CI) | ⬜ |
 
@@ -102,7 +102,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | T-01 | Backend unit coverage 100% (line/branch/function/statement) | S55–S56 | ✅ (non-app src 100%) |
 | T-02 | Functional coverage 100% of documented flows | S57 | OK (app layer 100%; whole src tree 100/100/100/100) |
 | T-03 | Negative coverage of failure/adversarial paths | S58 | OK (`tests/negative/` 27: tamper, RBAC 403/scope, malformed/injection, HTTP 400/403/404/500) |
-| T-04 | Front-end (web) logic coverage 100% via jsdom (executes here) | S61 | ⬜ |
-| T-05 | Playwright web E2E green in CI (desktop + mobile) | S61 | ⬜ |
+| T-04 | Front-end (web) logic coverage 100% via jsdom (executes here) | S61 | OK (api.js + app.js 100/100/100/100, 27 tests) |
+| T-05 | Playwright web E2E green in CI | S61 | CI-only (`tests/playwright/control-room.spec.ts`; needs browser binary, blocked offline) |
 | T-06 | Flutter mobile tests green in CI | S62 | ⬜ |
 | T-07 | `make ci-local` green here (tsc + 100% + jsdom + offline demo) | S62 | ⬜ |

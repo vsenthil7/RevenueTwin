@@ -173,3 +173,23 @@ hash-tamper, twin-history-default, and object-payload cases.
 
 **Executed here:** persistence **19 tests, 100%**. Full suite now **133 tests, tsc 0 errors**.
 **Loop state:** S55 part 1 ✅ (persistence) → continuing S55 with rbac/extraction/connectors/billing.
+
+---
+
+## 2026-06-12 — S55 ✅ unit pyramid pt.1 complete
+
+**Built tests (each 100% on all four metrics, executed here):**
+- `rbac.test.ts` (13) — deny-by-default, 7 roles, effective-permission union, customer scoping, SCIM
+  UserStore lifecycle (provision/deactivate/assignRoles/setCustomerScope/authenticate).
+- `extraction.test.ts` (12) — rule extractor confidence markers (commit boost / hedge penalty / base),
+  out-of-range % guard (injection-safe), event assembly, batch, threshold drop, optional uplift.
+- `connectors.test.ts` (22) — CursorStore, FixtureConnector paging+invalid-cursor, SyncEngine
+  (healthy/degraded/unavailable/maxPages/empty-page), every normalize mapper + validation rejects +
+  numeric-string coercion + normalizeBatch success/reject split.
+- `billing.test.ts` (9) — InMemoryBillingWriter idempotent post/void, BillingService gated on the
+  action layer's `isExecuted`, audited post + void, idempotency, unknown-proposal rejection.
+- (persistence done previously, 19.)
+
+**Loop chased branch coverage to 100%** on connectors (optNumber string/null branches) and persistence.
+**Executed here:** S55 total **75 tests**. Full suite now **189 tests, tsc 0 errors**.
+**Loop state:** S55 ✅ → next S56 (unit pyramid pt.2: the ~30 revenue-domain modules).

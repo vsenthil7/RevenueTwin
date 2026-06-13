@@ -40,16 +40,16 @@ could not compile until their imports existed; Block R wires and tests them.
 
 | Req ID | Requirement | Module | Sprint | Test artifact | Status |
 |---|---|---|---|---|---|
-| I-01 | Deny-by-default RBAC, 7 roles, customer scoping | `src/identity/rbac.ts` | S17→S55 | `tests/unit/rbac.test.ts` | ⬜ (present, unwired) |
+| I-01 | Deny-by-default RBAC, 7 roles, customer scoping | `src/identity/rbac.ts` | S17→S55 | `tests/unit/rbac.test.ts` (13, 100%) | ✅ |
 | I-02 | **Real auth seam (OIDC/Entra `verifyToken`)**, not header shim | `src/identity/auth.ts` (new) + `src/app/server.ts` | S60 | `tests/negative/auth.test.ts` | ⬜ |
 
 ## 4. Domain breadth (delivered modules — wired & tested in Block R)
 
 | Req ID | Requirement | Module | Sprint | Status |
 |---|---|---|---|---|
-| D-01 | Connector ingestion + normalization | `src/connectors/*` | S14→S55 | ⬜ (present, unwired) |
-| D-02 | Work IQ extraction (rule + LLM seam) | `src/intent/extraction.ts` | S15→S55 | ⬜ (present, unwired) |
-| D-03 | Billing write-back (credit note / corrected line) | `src/billing/write-back.ts` | S16→S55 | ⬜ (present, unwired) |
+| D-01 | Connector ingestion + normalization | `src/connectors/*` | S14→S55 | `tests/unit/connectors.test.ts` (22, 100%) | ✅ |
+| D-02 | Work IQ extraction (rule + LLM seam) | `src/intent/extraction.ts` | S15→S55 | `tests/unit/extraction.test.ts` (12, 100%) | ✅ |
+| D-03 | Billing write-back (credit note / corrected line) | `src/billing/write-back.ts` | S16→S55 | `tests/unit/billing.test.ts` (9, 100%) | ✅ |
 | D-04 | Reporting / CFO analytics | `src/reporting/analytics.ts` | S19→S55 | ⬜ (present, unwired) |
 | D-05 | Bulk operations & scale | `src/bulk/operations.ts` | S20→S55 | ⬜ (present, unwired) |
 | D-06 | Multi-currency consolidation | `src/consolidation/fx-consolidation.ts` | S21→S56 | ⬜ (present, unwired) |

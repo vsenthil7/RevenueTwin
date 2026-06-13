@@ -54,11 +54,11 @@ could not compile until their imports existed; Block R wires and tests them.
 | D-05 | Bulk operations & scale | `src/bulk/operations.ts` | S20→S55 | ⬜ (present, unwired) |
 | D-06 | Multi-currency consolidation | `src/consolidation/fx-consolidation.ts` | S21→S56 | `tests/unit/fx-consolidation.test.ts` (8, 100%) | ✅ |
 | D-07 | Forecasting & at-risk revenue | `src/forecasting/forecast.ts` | S22→S56 | ⬜ (present, unwired) |
-| D-08 | Anomaly detection (z-score + MAD) | `src/anomaly/detection.ts` | S23→S56 | ⬜ (present, unwired) |
+| D-08 | Anomaly detection (z-score + MAD) | `src/anomaly/detection.ts` | S23→S56 | `tests/unit/anomaly.test.ts` (13, 100%) | ✅ |
 | D-09 | Dispute & negotiation management | `src/disputes/negotiation.ts` | S24→S56 | ⬜ (present, unwired) |
 | D-10 | Approval policy engine | `src/policy/approval-policy.ts` | S25→S56 | ⬜ (present, unwired) |
 | D-11 | Observability & operational metrics | `src/observability/metrics.ts` | S26→S56 | ⬜ (present, unwired) |
-| D-12 | Data quality & lineage scoring | `src/dataquality/scoring.ts` | S27→S56 | ⬜ (present, unwired) |
+| D-12 | Data quality & lineage scoring | `src/dataquality/scoring.ts` | S27→S56 | `tests/unit/dataquality.test.ts` (10, 100%) | ✅ |
 | D-13 | Tenant config & entitlements | `src/tenancy/config.ts` | S28→S56 | ⬜ (present, unwired) |
 | D-14 | Usage / consumption billing | `src/usage/consumption.ts` | S29→S56 | ⬜ (present, unwired) |
 | D-15 | Contract amendment diffing | `src/amendments/diff.ts` | S30→S56 | ⬜ (present, unwired) |

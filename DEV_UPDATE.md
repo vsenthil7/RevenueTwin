@@ -206,3 +206,17 @@ hash-tamper, twin-history-default, and object-payload cases.
   residual method, discount allocation, currency guards, sum-exactly verifier.
 
 **Executed here:** 17 tests. **Loop state:** S56 batch 1 ✅ → 23 domain modules remaining.
+
+---
+
+## 2026-06-12 — S56 🔄 batch 2: anomaly + dataquality
+
+**Built tests (100% all four metrics):**
+- `anomaly.test.ts` (13) — computeStats odd/even median+MAD, zscore + mad detection (high/low
+  outliers, zero-variance/zero-MAD skips), period-drop cliffs with non-positive-base skip, moneySeries.
+- `dataquality.test.ts` (10) — completeness/freshness(decay)/consistency, all five grade bands
+  A–F, quality gate confidence multiplication + hold, range validation.
+
+**Loop caught two test bugs:** zscore/mad datasets that didn't actually flag (MAD=0 for single-spike
+series), and a period-drop count that missed the 40→0 cliff. Fixed both; full suite **228 green, tsc 0**.
+**Loop state:** S56 batch 2 ✅ → 21 domain modules remaining.

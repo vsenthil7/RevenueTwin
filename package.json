@@ -17,7 +17,8 @@
     "seed": "node --import tsx scripts/seed.ts",
     "status": "node --import tsx scripts/status.ts",
     "demo:live": "node --import tsx src/app/demo-live.ts",
-    "serve:web": "node --import tsx scripts/serve-web.ts"
+    "serve:web": "node --import tsx scripts/serve-web.ts",
+    "start": "node --import tsx scripts/serve-web.ts"
   },
   "license": "UNLICENSED",
   "devDependencies": {

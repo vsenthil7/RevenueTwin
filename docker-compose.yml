@@ -1,0 +1,25 @@
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8787:8787"
+    environment:
+      PORT: 8787
+      # In-memory by default. To use the bundled Postgres, set DATABASE_URL and wire a pg client
+      # at the edge (see src/app/persistence-factory.ts). Left unset here so the box boots clean.
+      # DATABASE_URL: postgres://revenuetwin:changeme@db:5432/revenuetwin
+    depends_on:
+      - db
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: revenuetwin
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: revenuetwin
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

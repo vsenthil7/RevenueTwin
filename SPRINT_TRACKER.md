@@ -39,8 +39,8 @@ Legend: ✅ done & verified · 🟡 in progress · ⬜ not started · ⚠️ env
 | S8 | Platform & integrations | ✅ | green | API perms (403/404), webhooks, connector health/mode |
 | S9 | Enterprise controls | ✅ | green | SOX map RC-01..06, SoD, dual approval, retention, legal hold |
 | S10 | Industry pack 1 (SaaS revenue) | ✅ | green | ARR/MRR split, overage, escalator, FX-as-of-date |
-| S11 | Enterprise pilot readiness | 🟡 | docs | deployment/security/ROI/admin packets (in progress) |
-| S12 | Scale & OS roadmap | 🟡 | docs | roadmap, packaging, threat model (in progress) |
+| S11 | Enterprise pilot readiness | ✅ | docs | deployment/security/ROI/admin packets -> docs/DEPLOYMENT.md |
+| S12 | Scale & OS roadmap | ✅ | docs | roadmap, packaging, threat model -> docs/ROADMAP_AND_THREAT_MODEL.md |
 
 ### Test execution status (honest)
 - **Backend (TS/Node):** 98 tests green, **100% line/branch/function/statement coverage** — executed here. ✅

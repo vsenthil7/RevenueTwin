@@ -466,3 +466,30 @@ resolves to a lib declaration. flutter test itself is CI-only (no Dart SDK in th
  documented in KNOWN_GAPS, same honest pattern as Playwright.
 
 Backend unaffected: suite 561 green, tsc 0, src tree 100/100/100/100. Block R (S47-S62) complete.
+
+
+---
+
+## 2026-06-13 - S11 + S12 DONE + CLI scripts (board fully green)
+
+Closed the two lingering go-to-market sprints and the missing scripts the Makefile/CI referenced.
+
+Scripts (scripts/, run via tsx; outside the src coverage gate):
+- demo-offline.ts: the required `make demo-offline`. Runs the Golden Thread with no network and
+  prints the moat proof — blind 0 / sighted 1 findings, £1,200.00 recoverable only via Work IQ,
+  open->approve, audit chain intact, portfolio summary. Asserts invariants and exits non-zero on
+  failure. Verified: exit 0.
+- seed.ts: deterministic portfolio manifest + audit head (make seed). Verified.
+- status.ts: health/backend/roles/portfolio/audit report (make status). Verified.
+- serve.ts: serves web/ + API on :4173 (make serve). _fmt.ts: shared money formatter.
+The CI demo job (npm run demo-offline) now has a real, passing target.
+
+Docs:
+- docs/DEPLOYMENT.md (S11): deployment topology, configuration, security posture, ROI model, admin
+  runbook, observability/DR. Marks S11 done.
+- docs/ROADMAP_AND_THREAT_MODEL.md (S12): packaging, now/next/later roadmap, STRIDE threat model
+  incl. the prompt-injection / LLM trust boundary, compliance notes. Marks S12 done.
+
+SPRINT_TRACKER S11 + S12 flipped to done. Backend suite 534 green, tsc 0, src tree 100/100/100/100.
+All of S0-S62 + S11/S12 now green; the only non-executing-here items remain Playwright and Flutter
+(CI-only, no browser/Dart SDK in the offline sandbox), documented in KNOWN_GAPS.

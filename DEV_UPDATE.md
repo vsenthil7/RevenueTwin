@@ -313,3 +313,37 @@ were caught by the whole-tree gate and brought to 100%.
 **Loop fixed:** workflow inbox test clock ran out of ISO values (assign consumes 2 clock reads) — gave it
 a full ISO sequence. Full suite **440 tests, 0 fail, tsc 0 errors**.
 **Loop state:** S56 ✅ → next S57 (functional suite over the app layer: RevenueTwinApp end-to-end flows).
+
+
+---
+
+## 2026-06-13 - S57 DONE: functional suite over the app layer (whole-tree 100%)
+
+Built `tests/functional/application.test.ts` (19) + `server.test.ts` (24), executed on a Windows
+host (Node 24). Covers application.ts, insights.ts, bootstrap.ts, server.ts end-to-end:
+- Golden Thread: open -> approve -> audit through RevenueTwinApp; asserts EXACTLY 1,200.00 net
+  via the real reconciliation + Work IQ path (blind-vs-sighted: OFF=0 findings, ON=1).
+- Case lifecycle (reject, non-actionable refusal, 404), scoped list/query/paginate.
+- Work IQ ingest (confident + below-threshold), reporting (portfolio/by-type/period-close),
+  totals, top cases, headline, insights, ROI (incl zero-cost & zero-benefit edges), anomalies,
+  evidence pack.
+- Authorization: permission-denied (revops cannot approve; no-read principal), customer-scope
+  denial on openCase/getCase/ingestIntent, listCases scope filtering.
+- HTTP: every route in handleApi, dispatch (GET/POST body/AppError->status/invalid JSON 500),
+  serveStatic (index default, 404, traversal 403, unknown MIME), resolvePrincipal, createApiServer.
+
+Coverage: whole `src` tree (excl demo-live.ts) = 100% lines/branches/functions/statements.
+Suite 483 tests, 0 fail, tsc 0 errors.
+
+Errors found & fixed this sprint:
+- A denial/scope/ROI-edge test chunk had silently failed to append during initial authoring
+  (a regex crash aborted that one writeFileSync), leaving application.ts branches 31/69/85/129 and
+  insights.ts 61/65 uncovered. Proven via a standalone probe that the pattern is NOT a c8 artifact
+  (identical if-throw hits 100% when both arms run), then re-appended the chunk -> branches closed.
+- server.ts line 193 (req.method ?? GET) needed an api-path request with method undefined; added.
+- fakeRes() used `this` in object-literal methods -> 3 tsc TS2339 errors; rewrote with a closure
+  variable so tsc --noEmit passes.
+
+Environment note: the build was reconstructed in a Linux container in prior sessions; this session
+ran on the Windows host. Verified npm ci clean + 483 tests + tsc 0 on Windows, so the suite is
+reproducible outside the container, not container-only.

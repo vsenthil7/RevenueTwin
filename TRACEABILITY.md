@@ -82,10 +82,10 @@ could not compile until their imports existed; Block R wires and tests them.
 
 | Req ID | Requirement | Module | Sprint | Test artifact | Status |
 |---|---|---|---|---|---|
-| A-01 | Unified app facade (authZ + persistence + audit per call) | `src/app/application.ts` | S45→S57 | `tests/functional/application.test.ts` | ⬜ (present, unwired) |
-| A-02 | HTTP REST server + static UI | `src/app/server.ts` | S45→S57 | `tests/functional/server.test.ts` | ⬜ (present, unwired) |
+| A-01 | Unified app facade (authZ + persistence + audit per call) | `src/app/application.ts` | S45->S57 | `tests/functional/application.test.ts` (19, 100%) | OK |
+| A-02 | HTTP REST server + static UI | `src/app/server.ts` | S45->S57 | `tests/functional/server.test.ts` (24, 100%) | OK |
 | A-03 | Bootstrap / demo provisioning through real path | `src/app/bootstrap.ts` | S45→S59 | `tests/functional/bootstrap.test.ts` | ⬜ (present, unwired) |
-| A-04 | Insights service (ROI, benchmark, anomalies) | `src/app/insights.ts` | S46→S57 | `tests/functional/insights.test.ts` | ⬜ (present, unwired) |
+| A-04 | Insights service (ROI, benchmark, anomalies) | `src/app/insights.ts` | S46->S57 | `tests/functional/application.test.ts` (insights flows, 100%) | OK |
 
 ## 6. Front end
 
@@ -100,7 +100,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | Req ID | Requirement | Sprint | Status |
 |---|---|---|---|
 | T-01 | Backend unit coverage 100% (line/branch/function/statement) | S55–S56 | ✅ (non-app src 100%) |
-| T-02 | Functional coverage 100% of documented flows | S57 | ⬜ |
+| T-02 | Functional coverage 100% of documented flows | S57 | OK (app layer 100%; whole src tree 100/100/100/100) |
 | T-03 | Negative coverage 100% of failure/adversarial paths | S58 | ⬜ |
 | T-04 | Front-end (web) logic coverage 100% via jsdom (executes here) | S61 | ⬜ |
 | T-05 | Playwright web E2E green in CI (desktop + mobile) | S61 | ⬜ |

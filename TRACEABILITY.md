@@ -67,12 +67,12 @@ could not compile until their imports existed; Block R wires and tests them.
 | D-18 | Scheduler (recurring jobs, backoff) | `src/scheduler/scheduler.ts` | S33→S56 | `tests/unit/scheduler.test.ts` (10, 100%) | ✅ |
 | D-19 | Production webhook delivery (HMAC, DLQ) | `src/webhooks/delivery.ts` | S34→S56 | `tests/unit/webhook-delivery.test.ts` (10, 100%) | ✅ |
 | D-20 | Tax & jurisdiction engine | `src/tax/jurisdiction.ts` | S35→S56 | `tests/unit/tax.test.ts` (8, 100%) | ✅ |
-| D-21 | Contract lifecycle (ramp, co-term) | `src/contracts/lifecycle.ts` | S36→S56 | ⬜ (present, unwired) |
-| D-22 | Revenue recognition (ASC 606 / IFRS 15) | `src/revrec/recognition.ts` | S37→S56 | ⬜ (present, unwired) |
+| D-21 | Contract lifecycle (ramp, co-term) | `src/contracts/lifecycle.ts` | S36→S56 | `tests/unit/lifecycle.test.ts` (10, 100%) | ✅ |
+| D-22 | Revenue recognition (ASC 606 / IFRS 15) | `src/revrec/recognition.ts` | S37→S56 | `tests/unit/recognition.test.ts` (12, 100%) | ✅ |
 | D-23 | Transaction-price allocation | `src/allocation/transaction-price.ts` | S38→S56 | `tests/unit/transaction-price.test.ts` (9, 100%) | ✅ |
 | D-24 | Churn & expansion (NRR/GRR) | `src/churn/retention.ts` | S39→S56 | `tests/unit/churn.test.ts` (6, 100%) | ✅ |
-| D-25 | Safe leakage-detector DSL (no eval) | `src/detectors/dsl.ts` | S40→S56 | ⬜ (present, unwired) |
-| D-26 | Partner / reseller revenue splits | `src/partners/revenue-split.ts` | S41→S56 | ⬜ (present, unwired) |
+| D-25 | Safe leakage-detector DSL (no eval) | `src/detectors/dsl.ts` | S40→S56 | `tests/unit/dsl.test.ts` (10, 100%) | ✅ |
+| D-26 | Partner / reseller revenue splits | `src/partners/revenue-split.ts` | S41→S56 | `tests/unit/revenue-split.test.ts` (11, 100%) | ✅ |
 | D-27 | Double-entry journal postings | `src/journal/entries.ts` | S42→S56 | ⬜ (present, unwired) |
 | D-28 | Customer segmentation | `src/segmentation/segments.ts` | S43→S56 | ⬜ (present, unwired) |
 | D-29 | Alerting & thresholds (hysteresis) | `src/alerts/alerting.ts` | S44→S56 | ⬜ (present, unwired) |

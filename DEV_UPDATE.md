@@ -276,3 +276,22 @@ overage assertion that ignored tiered graduation. Full suite **303 green, tsc 0*
 **Loop fixed three test bugs:** scheduler retry clocks needed real ISO (addSeconds parses them),
 and a JPY-upside expectation that didn't match the money module's fixed 2-digit `toDecimal`.
 Full suite **345 green, tsc 0**. **Loop state:** S56 batch 5 ✅ → 8 modules left.
+
+---
+
+## 2026-06-12 — S56 🔄 batch 6: contracts + revrec + detectors + partners
+
+**Built tests (100% all four metrics):**
+- `lifecycle.test.ts` (10) — ramp escalation/total/value-at-month, co-term proration (extend/shorten),
+  mid-term-change split, validation, months-to-renewal.
+- `recognition.test.ts` (12) — straight-line (remainder + negative), ratable + point-in-time schedules,
+  combine, per-period/cumulative, deferred waterfall to zero, recognition variance.
+- `dsl.test.ts` (10) — safe AST evaluator (compare/and/or/not), numeric-op type guard, unknown-field
+  error, runDetector hits + amountField guard, suite dup-id guard, totalFlagged, validateRule.
+- `revenue-split.test.ts` (11) — percentage split + retained remainder + exact rounding (incl.
+  larger-later correction), tiered commission graduation + break path, vendor net-down, sum verifier.
+
+**Loop fixed:** removed an unreachable defensive guard in percentageSplit (replaced with an explicit
+empty-shares check per project principle), then covered the rounding-correction + commission-break
+branches. Full suite **389 green, tsc 0**. **Loop state:** S56 batch 6 ✅ → 4 modules left
+(journal, segments, alerts, workflow).

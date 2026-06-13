@@ -28,6 +28,7 @@ export interface SplitLine {
  * Penny remainder from rounding goes to the largest share for exact summation.
  */
 export function percentageSplit(gross: Money, shares: PartyShare[]): SplitLine[] {
+  if (shares.length === 0) throw new SplitError('At least one party share required');
   let totalPct = 0;
   for (const s of shares) {
     if (s.percent < 0 || s.percent > 100) throw new SplitError(`Invalid percent for ${s.partyId}`);
@@ -46,7 +47,7 @@ export function percentageSplit(gross: Money, shares: PartyShare[]): SplitLine[]
   // largest share (deterministic via reduce; first line wins ties).
   const sum = lines.reduce((s, l) => s + l.amount, 0);
   const diff = gross.amount - sum;
-  if (diff !== 0 && lines.length > 0) {
+  if (diff !== 0) {
     const maxIdx = lines.reduce((best, l, i) => (l.amount > lines[best]!.amount ? i : best), 0);
     lines[maxIdx]!.amount += diff;
   }

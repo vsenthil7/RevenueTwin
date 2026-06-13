@@ -62,11 +62,11 @@ could not compile until their imports existed; Block R wires and tests them.
 | D-13 | Tenant config & entitlements | `src/tenancy/config.ts` | S28→S56 | `tests/unit/tenancy.test.ts` (10, 100%) | ✅ |
 | D-14 | Usage / consumption billing | `src/usage/consumption.ts` | S29→S56 | `tests/unit/consumption.test.ts` (15, 100%) | ✅ |
 | D-15 | Contract amendment diffing | `src/amendments/diff.ts` | S30→S56 | `tests/unit/amendments.test.ts` (8, 100%) | ✅ |
-| D-16 | Peer benchmarking | `src/benchmarking/peer-benchmark.ts` | S31→S56 | ⬜ (present, unwired) |
-| D-17 | Evidence pack generation | `src/evidence/evidence-pack.ts` | S32→S56 | ⬜ (present, unwired) |
-| D-18 | Scheduler (recurring jobs, backoff) | `src/scheduler/scheduler.ts` | S33→S56 | ⬜ (present, unwired) |
-| D-19 | Production webhook delivery (HMAC, DLQ) | `src/webhooks/delivery.ts` | S34→S56 | ⬜ (present, unwired) |
-| D-20 | Tax & jurisdiction engine | `src/tax/jurisdiction.ts` | S35→S56 | ⬜ (present, unwired) |
+| D-16 | Peer benchmarking | `src/benchmarking/peer-benchmark.ts` | S31→S56 | `tests/unit/peer-benchmark.test.ts` (8, 100%) | ✅ |
+| D-17 | Evidence pack generation | `src/evidence/evidence-pack.ts` | S32→S56 | `tests/unit/evidence-pack.test.ts` (5, 100%) | ✅ |
+| D-18 | Scheduler (recurring jobs, backoff) | `src/scheduler/scheduler.ts` | S33→S56 | `tests/unit/scheduler.test.ts` (10, 100%) | ✅ |
+| D-19 | Production webhook delivery (HMAC, DLQ) | `src/webhooks/delivery.ts` | S34→S56 | `tests/unit/webhook-delivery.test.ts` (10, 100%) | ✅ |
+| D-20 | Tax & jurisdiction engine | `src/tax/jurisdiction.ts` | S35→S56 | `tests/unit/tax.test.ts` (8, 100%) | ✅ |
 | D-21 | Contract lifecycle (ramp, co-term) | `src/contracts/lifecycle.ts` | S36→S56 | ⬜ (present, unwired) |
 | D-22 | Revenue recognition (ASC 606 / IFRS 15) | `src/revrec/recognition.ts` | S37→S56 | ⬜ (present, unwired) |
 | D-23 | Transaction-price allocation | `src/allocation/transaction-price.ts` | S38→S56 | `tests/unit/transaction-price.test.ts` (9, 100%) | ✅ |

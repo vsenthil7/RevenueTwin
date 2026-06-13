@@ -256,3 +256,23 @@ series), and a period-drop count that missed the 40→0 cliff. Fixed both; full 
 **Loop fixed two test bugs:** invalid `0_50` numeric literal (leading-zero separator), and a true-up
 overage assertion that ignored tiered graduation. Full suite **303 green, tsc 0**.
 **Loop state:** S56 batch 4 ✅ → 13 modules left.
+
+---
+
+## 2026-06-12 — S56 🔄 batch 5: benchmarking + scheduler + webhooks + tax + evidence
+
+**Built tests (100% all four metrics):**
+- `peer-benchmark.test.ts` (8) — quartile assignment, vs-median, recovery maturity tiers,
+  top-quartile upside (incl. zero-decimal currency path).
+- `scheduler.test.ts` (10) — backoff doubling, due calc, JobRunner success/retry/exhaust ledger,
+  non-Error stringify, history filter, dueJobs selection, default clock.
+- `webhook-delivery.test.ts` (10) — HMAC sign/verify, 2xx success, retry on non-2xx + thrown,
+  dead-letter on exhaustion, redrive (success + still-failing), non-Error stringify, default clock.
+- `tax.test.ts` (8) — single/compound assessment, exemption, jurisdiction resolution (exact/
+  country/fallback/missing), effective rate, leakage.
+- `evidence-pack.test.ts` (5) — pack build + totals + audit-head tie, genesis head, content-hash
+  verify + tamper detection, control attestation counts.
+
+**Loop fixed three test bugs:** scheduler retry clocks needed real ISO (addSeconds parses them),
+and a JPY-upside expectation that didn't match the money module's fixed 2-digit `toDecimal`.
+Full suite **345 green, tsc 0**. **Loop state:** S56 batch 5 ✅ → 8 modules left.

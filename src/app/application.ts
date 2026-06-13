@@ -48,6 +48,17 @@ export class RevenueTwinApp {
     this.auditMirror = new AuditLog(clock);
   }
 
+  /**
+   * Rehydrate the in-process audit chain from the durable store. Call once after construction when
+   * resuming against a persistent backend so seq/prevHash continue from the persisted head instead
+   * of restarting at genesis (which would break the chain on the first post-restart write). Safe
+   * and idempotent on an empty store (no-op).
+   */
+  async init(): Promise<void> {
+    const persisted = await this.uow.audit.all();
+    if (persisted.length > 0) this.auditMirror.rehydrate(persisted);
+  }
+
   get tenantId(): string { return this.config.tenantId; }
   get currency(): string { return this.config.currency; }
 

@@ -75,3 +75,21 @@ equivalent executed proof is named.
 - The mobile API client targets the same REST surface as the web console; the live screens
  (PortfolioScreen/TriageScreen/ApprovalsScreen) are thin wrappers to be wired to the client at run
  time, while the testable *View widgets take pre-loaded data so they are deterministic.
+
+
+## Postgres durability (wired + proven)
+
+
+- Postgres is now the durable production backend. The real `pg` driver is wired only at the edge
+ (`src/edge/pg-factory.ts`); the core stays driver-free behind the S59 `PgClientFactory` seam.
+ On boot with `DATABASE_URL` set, the schema is applied, the tenant row upserted, and the demo
+ portfolio is seeded only on a fresh database. The audit chain is rehydrated from the persisted
+ head on restart (`AuditLog.rehydrate` + `RevenueTwinApp.init`) so seq/prevHash continue correctly.
+ Verified end-to-end against a real postgres:16 container: approve a case, restart the process,
+ the decision and an intact audit chain survive.
+ - `src/edge/pg-factory.ts` is excluded from the coverage gate (alongside `src/app/demo-live.ts`):
+ it is a thin real-driver entrypoint that cannot run without a live Postgres in the offline build
+ sandbox. Its behavior is exercised by the live container test and by unit tests of the seam
+ (rehydrate, init, Date->ISO normalization).
+ - `detail` is stored as TEXT (not jsonb) so the exact JSON string the audit hash was computed over
+ round-trips byte-for-byte; jsonb reorders object keys, which would break the order-sensitive hash.

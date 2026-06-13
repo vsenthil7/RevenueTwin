@@ -105,3 +105,51 @@ test('AuditError is constructible', () => {
   assert.equal(err.name, 'AuditError');
   assert.equal(err.message, 'boom');
 });
+
+
+test('rehydrate restores a sealed chain so new appends continue from the persisted head', () => {
+  const seed = new AuditLog(() => '2026-01-01T00:00:00.000Z');
+  seed.append('cfo', 'a', 's1', { n: 1 });
+  seed.append('cfo', 'b', 's2', { n: 2 });
+  const persisted = seed.all();
+
+  const fresh = new AuditLog(() => '2026-02-01T00:00:00.000Z');
+  fresh.rehydrate(persisted);
+  assert.equal(fresh.length, 2);
+  assert.equal(fresh.headHash(), persisted[1]!.hash);
+  // a new append links onto the rehydrated head and the whole chain still verifies
+  const next = fresh.append('cfo', 'c', 's3', { n: 3 });
+  assert.equal(next.seq, 2);
+  assert.equal(next.prevHash, persisted[1]!.hash);
+  assert.equal(fresh.verifyChain(), true);
+});
+
+test('rehydrate is only valid on an empty chain', () => {
+  const log = new AuditLog(() => '2026-01-01T00:00:00.000Z');
+  log.append('cfo', 'a', 's1', {});
+  assert.throws(() => log.rehydrate([]), /only valid on an empty/);
+});
+
+test('rehydrate rejects a non-monotonic seq', () => {
+  const seed = new AuditLog(() => '2026-01-01T00:00:00.000Z');
+  const e0 = seed.append('cfo', 'a', 's1', {});
+  const bad: AuditEntry = { ...e0, seq: 5 };
+  // recompute hash so it is the seq check (not the hash check) that fires
+  const sealed: AuditEntry = { ...bad, hash: hashEntry({ seq: bad.seq, at: bad.at, actor: bad.actor, event: bad.event, subject: bad.subject, detail: bad.detail, prevHash: bad.prevHash }) };
+  assert.throws(() => new AuditLog().rehydrate([sealed]), /non-monotonic seq/);
+});
+
+test('rehydrate rejects a prevHash break', () => {
+  const seed = new AuditLog(() => '2026-01-01T00:00:00.000Z');
+  const e0 = seed.append('cfo', 'a', 's1', {});
+  const bad = { ...e0, prevHash: 'f'.repeat(64) };
+  const sealed: AuditEntry = { ...bad, hash: hashEntry({ seq: bad.seq, at: bad.at, actor: bad.actor, event: bad.event, subject: bad.subject, detail: bad.detail, prevHash: bad.prevHash }) };
+  assert.throws(() => new AuditLog().rehydrate([sealed]), /prevHash break/);
+});
+
+test('rehydrate rejects a tampered hash', () => {
+  const seed = new AuditLog(() => '2026-01-01T00:00:00.000Z');
+  const e0 = seed.append('cfo', 'a', 's1', {});
+  const tampered: AuditEntry = { ...e0, hash: '0'.repeat(64) };
+  assert.throws(() => new AuditLog().rehydrate([tampered]), /hash mismatch/);
+});

@@ -71,6 +71,13 @@ export async function bootstrap(opts: {
   const users = seedUsers();
   const app = new RevenueTwinApp(uow, { tenantId, currency }, opts.clock);
 
+  // Resuming against a populated durable store: rehydrate the audit chain so seq/prevHash continue
+  // from the persisted head. When seeding a fresh store below, the chain is built in-process and
+  // already matches, so we only rehydrate when not seeding.
+  if (opts.seedCase === false) {
+    await app.init();
+  }
+
   if (opts.seedCase !== false) {
     const cfo = users.authenticate('cfo');
     // The Golden Thread leak: Work IQ intent, detected via the real reconciliation path.

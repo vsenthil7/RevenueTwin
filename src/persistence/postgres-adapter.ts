@@ -55,7 +55,12 @@ class PgAuditStore implements AuditStore {
 
   private rowToEntry(r: any): AuditEntry {
     return {
-      seq: Number(r.seq), at: r.at, actor: r.actor, event: r.event, subject: r.subject,
+      // Postgres TIMESTAMPTZ comes back as a Date; convert to ISO-8601 so the hash re-verifies on
+      // reload. If the driver/fake already returns a string, keep it byte-exact (do not reformat,
+      // which could add/drop millisecond precision and break the hash).
+      seq: Number(r.seq),
+      at: r.at instanceof Date ? r.at.toISOString() : String(r.at),
+      actor: r.actor, event: r.event, subject: r.subject,
       detail: typeof r.detail === 'string' ? JSON.parse(r.detail) : r.detail,
       prevHash: r.prev_hash, hash: r.hash,
     };

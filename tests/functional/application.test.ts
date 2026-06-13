@@ -225,3 +225,32 @@ test('ROI handles zero cost (multiple 0) and zero benefit (payback Infinity)', a
   const zc = await app.roi(cfo, { annualPlatformCostMinor: 0, analystHoursSavedPerMonth: 10, analystHourlyCostMinor: 50_00 });
   assert.equal(zc.roiMultiple, 0);
 });
+
+
+test('init() rehydrates the audit chain from a populated store so a fresh app continues it', async () => {
+  const uow = new MemoryUnitOfWork();
+  const users = seedUsers();
+  const cfo = users.authenticate('cfo');
+  // First app instance writes a couple of audited events into the shared store.
+  const app1 = new RevenueTwinApp(uow, { tenantId: 't', currency: 'GBP' }, clockSeq());
+  await app1.openCase(cfo, 'acme', [{ id: 'f1', type: 'intent', netRecoverable: money(1000_00, 'GBP') }], false, '2026-04-02T00:00:00.000Z');
+  const before = (await uow.audit.all()).length;
+  assert.ok(before > 0);
+
+  // A fresh app on the SAME store must rehydrate, not restart at genesis.
+  const app2 = new RevenueTwinApp(uow, { tenantId: 't', currency: 'GBP' }, clockSeq('2026-05-01T00:00:00.000Z'));
+  await app2.init();
+  // A new decision appends onto the rehydrated head; the persisted chain stays intact.
+  const cases = await app2.listCases(cfo);
+  await app2.decideCase(cfo, cases[0]!.id, 'approve', '2026-05-01T01:00:00.000Z');
+  assert.equal(await app2.auditIntact(cfo), true);
+  assert.equal((await uow.audit.all()).length, before + 1);
+});
+
+test('init() on an empty store is a no-op', async () => {
+  const uow = new MemoryUnitOfWork();
+  const app = new RevenueTwinApp(uow, { tenantId: 't', currency: 'GBP' }, clockSeq());
+  await app.init();
+  const cfo = seedUsers().authenticate('cfo');
+  assert.equal(await app.auditIntact(cfo), true);
+});

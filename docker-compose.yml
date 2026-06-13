@@ -6,11 +6,12 @@ services:
       - "8787:8787"
     environment:
       PORT: 8787
-      # In-memory by default. To use the bundled Postgres, set DATABASE_URL and wire a pg client
-      # at the edge (see src/app/persistence-factory.ts). Left unset here so the box boots clean.
-      # DATABASE_URL: postgres://revenuetwin:changeme@db:5432/revenuetwin
+      # Durable Postgres backend. The pg driver is wired at the edge (src/edge/pg-factory.ts); on
+      # boot the schema is applied and the demo portfolio is seeded only on a fresh database.
+      DATABASE_URL: postgres://revenuetwin:changeme@db:5432/revenuetwin
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -20,6 +21,11 @@ services:
       POSTGRES_DB: revenuetwin
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U revenuetwin"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 volumes:
   pgdata:

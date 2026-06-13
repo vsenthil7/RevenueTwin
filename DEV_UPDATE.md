@@ -521,3 +521,29 @@ Ran a final pre-submission audit. Three genuine gaps surfaced and were fixed:
 After fixes: test:coverage exit 0 at 100/100/100/100, tsc 0, test:frontend 27 pass, demo-offline
 and demo:live both exit 0. The audit is exactly why this matters - the coverage gate had silently
 stopped protecting the project.
+
+
+---
+
+## 2026-06-13 - Postgres durability wired at the edge (data survives restart)
+
+Wired the real Postgres backend end-to-end so the deployed stack is durable, not in-memory.
+
+New src/edge/pg-factory.ts is the only place importing the real pg driver via dynamic import, so
+non-postgres paths never load it. It builds a PgClientFactory over a pg.Pool plus runSchema() which
+applies schema.sql and upserts the tenant row. scripts/serve-web.ts selects postgres when
+DATABASE_URL is set: applies schema, seeds the demo portfolio only on a fresh DB, otherwise resumes.
+New RevenueTwinApp.init() + AuditLog.rehydrate() reload the audit chain from the persisted head so
+seq and prevHash continue after a restart. docker-compose.yml now enables DATABASE_URL behind a db
+healthcheck gate. pg is now a production dependency so it survives npm ci --omit=dev.
+
+Five real bugs found and fixed while proving the path against a live postgres:16 container:
+1. Missing tenant row: every table FKs to tenant(id) but it was never inserted; runSchema upserts it.
+2. Re-seed on restart caused duplicate-key; serve-web seeds only when leakage_case is empty.
+3. Audit chain restarted at genesis on restart; added rehydrate()/init() to resume from the head.
+4. TIMESTAMPTZ returns a Date; rowToEntry converts Date to ISO while leaving string values exact.
+5. jsonb reordered detail keys and broke the order-sensitive hash; detail column is now TEXT.
+
+542 tests pass, tsc 0, coverage gate 100 across all four metrics (edge file excluded like
+demo-live, documented in KNOWN_GAPS). Live verified: approve, restart, the approval and an intact
+audit chain both survive.

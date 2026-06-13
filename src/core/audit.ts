@@ -82,6 +82,26 @@ export class AuditLog {
     return entry;
   }
 
+  /**
+   * Rehydrate the in-process chain from previously-sealed, persisted entries (e.g. on restart with
+   * a durable backend). Entries must be in seq order and form a valid chain; throws otherwise so a
+   * corrupt or out-of-order load fails fast rather than silently continuing a broken chain.
+   * Only valid on an empty chain.
+   */
+  rehydrate(entries: readonly AuditEntry[]): void {
+    if (this.entries.length !== 0) throw new Error('rehydrate is only valid on an empty AuditLog');
+    let prev = GENESIS_HASH;
+    for (let i = 0; i < entries.length; i++) {
+      const e = entries[i]!;
+      if (e.seq !== i) throw new Error('rehydrate: non-monotonic seq at index ' + i);
+      if (e.prevHash !== prev) throw new Error('rehydrate: prevHash break at seq ' + e.seq);
+      const recomputed = hashEntry({ seq: e.seq, at: e.at, actor: e.actor, event: e.event, subject: e.subject, detail: e.detail, prevHash: e.prevHash });
+      if (recomputed !== e.hash) throw new Error('rehydrate: hash mismatch at seq ' + e.seq);
+      prev = e.hash;
+    }
+    this.entries = [...entries];
+  }
+
   /** All entries in chain order (defensive copy). */
   all(): AuditEntry[] {
     return [...this.entries];

@@ -15,7 +15,9 @@ CREATE TABLE IF NOT EXISTS audit_log (
   actor       TEXT NOT NULL,
   event       TEXT NOT NULL,
   subject     TEXT NOT NULL,
-  detail      JSONB NOT NULL DEFAULT '{}'::jsonb,
+  -- detail is TEXT (not jsonb) so the exact JSON string the audit hash was computed over round-trips
+  -- byte-for-byte; jsonb reorders object keys on read, which would break the order-sensitive hash.
+  detail      TEXT NOT NULL DEFAULT '{}',
   prev_hash   CHAR(64) NOT NULL,
   hash        CHAR(64) NOT NULL,
   PRIMARY KEY (tenant_id, seq)

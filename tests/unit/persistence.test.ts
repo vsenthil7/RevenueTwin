@@ -335,3 +335,25 @@ test('postgres verifyChain false on content-hash tamper (prev intact)', async ()
   const uow = new PostgresUnitOfWork(client, 't1');
   assert.equal(await uow.audit.verifyChain(), false);
 });
+
+
+test('postgres audit store: at returned as a Date is normalized to ISO and the chain verifies', async () => {
+  // Real pg returns TIMESTAMPTZ as a Date; ensure rowToEntry converts it back to the exact ISO
+  // string the hash was computed over so verifyChain still passes.
+  const [e0] = chain(1);
+  const stored = e0!;
+  const dateClient: PgClient = {
+    async query(text: string, params: unknown[] = []) {
+      const sql = text.trim();
+      if (sql.startsWith('SELECT hash FROM audit_log')) return { rows: [{ hash: stored.hash }], rowCount: 1 };
+      if (sql.startsWith('SELECT * FROM audit_log')) {
+        return { rows: [{ tenant_id: 't1', seq: stored.seq, at: new Date(stored.at), actor: stored.actor, event: stored.event, subject: stored.subject, detail: JSON.stringify(stored.detail), prev_hash: stored.prevHash, hash: stored.hash }], rowCount: 1 };
+      }
+      return { rows: [], rowCount: 0 };
+    },
+  };
+  const uow = new PostgresUnitOfWork(dateClient, 't1');
+  const entries = await uow.audit.all();
+  assert.equal(entries[0]!.at, new Date(stored.at).toISOString());
+  assert.equal(typeof entries[0]!.at, 'string');
+});

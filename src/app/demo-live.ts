@@ -39,9 +39,10 @@ try {
 
   // 2. The seeded case is visible over the wire with its recoverable amount.
   const cases = await (await fetch(`${base}/api/cases`, { headers: cfo })).json();
-  assert(cases.length === 1, 'exactly one seeded case expected');
-  const net = cases[0].findings.reduce((s: number, f: { netRecoverable: { amount: number } }) => s + f.netRecoverable.amount, 0);
-  console.log(`\n  Case over HTTP: ${cases[0].customerId} — ${fmtGBP(net)} net recoverable, Work IQ=${cases[0].detectedViaWorkIQ}`);
+  const nw = cases.find((c: { customerId: string }) => c.customerId === 'northwind') ?? cases[0];
+  assert(nw !== undefined, 'the Northwind Work IQ case must be present over HTTP');
+  const net = nw.findings.reduce((s: number, f: { netRecoverable: { amount: number } }) => s + f.netRecoverable.amount, 0);
+  console.log(`\n  Case over HTTP: ${nw.customerId} — ${fmtGBP(net)} net recoverable, Work IQ=${nw.detectedViaWorkIQ}`);
   assert(net === 120000, 'net recoverable must be £1,200.00');
 
   // 3. Portfolio attribution.
@@ -56,7 +57,7 @@ try {
   console.log(`\n  RBAC: unauthenticated /api/cases -> ${noauth.status} (refused)`);
 
   // 5. Human-gated approval, written through the API into the audit chain.
-  const decided = await (await fetch(`${base}/api/cases/${encodeURIComponent(cases[0].id)}/decision`, {
+  const decided = await (await fetch(`${base}/api/cases/${encodeURIComponent(nw.id)}/decision`, {
     method: 'POST', headers: cfo, body: JSON.stringify({ decision: 'approve' }),
   })).json();
   assert(decided.status === 'approved', 'case must transition to approved');

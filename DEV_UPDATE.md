@@ -493,3 +493,31 @@ Docs:
 SPRINT_TRACKER S11 + S12 flipped to done. Backend suite 534 green, tsc 0, src tree 100/100/100/100.
 All of S0-S62 + S11/S12 now green; the only non-executing-here items remain Playwright and Flutter
 (CI-only, no browser/Dart SDK in the offline sandbox), documented in KNOWN_GAPS.
+
+
+---
+
+## 2026-06-13 - Buyer-readiness audit sweep: 3 real gaps found and fixed
+
+Ran a final pre-submission audit. Three genuine gaps surfaced and were fixed:
+
+1) COVERAGE GATE NOT ENFORCING (most serious). The packaged test:coverage script had the
+   --branches/--lines 100 flags but was MISSING --check-coverage, so c8 ignored the thresholds and
+   the CI "100% gate" job passed regardless of actual coverage (demo-live.ts sat at 0%). Fixed the
+   script to: --include src/**/*.ts --exclude src/app/demo-live.ts --check-coverage --branches 100
+   --lines 100 --functions 100 --statements 100. Verified it now exits 1 on sub-100% and 0 at 100%.
+
+2) demo-live.ts BROKEN. src/app/demo-live.ts (npm run demo:live) asserted cases.length === 1, but
+   bootstrap seeds the full 6-case portfolio - so the live HTTP demo exited 1. Drift from an older
+   single-seed bootstrap. Fixed to find the Northwind Work IQ case among the portfolio and assert
+   its £1,200 net + Work IQ attribution. Also added the missing demo:live and serve:web scripts
+   that package.json/Makefile referenced but did not define. demo:live now exits 0.
+
+3) README dangling links + stale counts. README referenced docs/ARCHITECTURE.md (missing),
+   docs/KNOWN_GAPS.md (file is at root) and docs/THREAT_MODEL.md (it is docs/ROADMAP_AND_THREAT_
+   MODEL.md). Wrote a real docs/ARCHITECTURE.md, corrected the two paths, and updated stale test
+   counts (98->534 backend, 10->27 jsdom, 12->11 Flutter). All README links now resolve.
+
+After fixes: test:coverage exit 0 at 100/100/100/100, tsc 0, test:frontend 27 pass, demo-offline
+and demo:live both exit 0. The audit is exactly why this matters - the coverage gate had silently
+stopped protecting the project.

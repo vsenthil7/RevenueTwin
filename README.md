@@ -68,12 +68,12 @@ runs the moat proof, and `make ci-local` runs everything that doesn't need brows
 
 ## Test status
 
-- **Backend:** 98 tests, 100% line/branch/function/statement coverage — executed.
-- **Web jsdom E2E:** 10 tests — executed.
+- **Backend:** 534 tests, 100% line/branch/function/statement coverage — executed.
+- **Web jsdom E2E:** 27 tests — executed.
 - **Web Playwright:** 10 specs × 2 device projects — CI-executed (browser binary).
-- **Mobile Flutter:** 12 tests — CI-executed (Flutter SDK).
+- **Mobile Flutter:** 11 tests — CI-executed (Flutter SDK).
 
-See [SPRINT_TRACKER.md](SPRINT_TRACKER.md) and [docs/KNOWN_GAPS.md](docs/KNOWN_GAPS.md) for the
+See [SPRINT_TRACKER.md](SPRINT_TRACKER.md) and [KNOWN_GAPS.md](KNOWN_GAPS.md) for the
 honest line between what runs in this build environment and what runs in CI.
 
 ## Non-negotiable invariants
@@ -81,4 +81,4 @@ honest line between what runs in this build environment and what runs in CI.
 1. **Deterministic money-math** — the model never computes money; the engine does, in integer minor units.
 2. **No autonomous writes** — every external write requires an explicit human `approve` and is reversible.
 3. **Tamper-evident audit** — every decision and write is hash-chained; `verify()` detects mutation.
-4. **Work IQ is gated** — intent only acts through structured `upliftPercent` + `confidence`, never free text (see [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md)).
+4. **Work IQ is gated** — intent only acts through structured `upliftPercent` + `confidence`, never free text (see [docs/ROADMAP_AND_THREAT_MODEL.md](docs/ROADMAP_AND_THREAT_MODEL.md)).

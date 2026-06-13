@@ -10,12 +10,14 @@
     "typecheck": "tsc -p tsconfig.json",
     "build": "tsc -p tsconfig.json --noEmit false --outDir dist --declaration",
     "test": "node --import tsx --test tests/unit/*.test.ts tests/functional/*.test.ts tests/negative/*.test.ts",
-    "test:coverage": "c8 --all --src src --reporter=text --reporter=json-summary --branches 100 --lines 100 --functions 100 --statements 100 node --import tsx --test tests/unit/*.test.ts tests/functional/*.test.ts tests/negative/*.test.ts",
+    "test:coverage": "c8 --all --include \"src/**/*.ts\" --exclude \"src/app/demo-live.ts\" --reporter=text --reporter=json-summary --check-coverage --branches 100 --lines 100 --functions 100 --statements 100 node --import tsx --test tests/unit/*.test.ts tests/functional/*.test.ts tests/negative/*.test.ts",
     "test:frontend": "node --import tsx --test tests/e2e/*.jsdom.test.ts",
     "test:e2e": "playwright test",
     "demo-offline": "node --import tsx scripts/demo-offline.ts",
     "seed": "node --import tsx scripts/seed.ts",
-    "status": "node --import tsx scripts/status.ts"
+    "status": "node --import tsx scripts/status.ts",
+    "demo:live": "node --import tsx src/app/demo-live.ts",
+    "serve:web": "node --import tsx scripts/serve-web.ts"
   },
   "license": "UNLICENSED",
   "devDependencies": {

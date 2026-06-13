@@ -53,13 +53,13 @@ could not compile until their imports existed; Block R wires and tests them.
 | D-04 | Reporting / CFO analytics | `src/reporting/analytics.ts` | S19→S55 | ⬜ (present, unwired) |
 | D-05 | Bulk operations & scale | `src/bulk/operations.ts` | S20→S55 | ⬜ (present, unwired) |
 | D-06 | Multi-currency consolidation | `src/consolidation/fx-consolidation.ts` | S21→S56 | `tests/unit/fx-consolidation.test.ts` (8, 100%) | ✅ |
-| D-07 | Forecasting & at-risk revenue | `src/forecasting/forecast.ts` | S22→S56 | ⬜ (present, unwired) |
+| D-07 | Forecasting & at-risk revenue | `src/forecasting/forecast.ts` | S22→S56 | `tests/unit/forecast.test.ts` (12, 100%) | ✅ |
 | D-08 | Anomaly detection (z-score + MAD) | `src/anomaly/detection.ts` | S23→S56 | `tests/unit/anomaly.test.ts` (13, 100%) | ✅ |
 | D-09 | Dispute & negotiation management | `src/disputes/negotiation.ts` | S24→S56 | ⬜ (present, unwired) |
-| D-10 | Approval policy engine | `src/policy/approval-policy.ts` | S25→S56 | ⬜ (present, unwired) |
+| D-10 | Approval policy engine | `src/policy/approval-policy.ts` | S25→S56 | `tests/unit/approval-policy.test.ts` (6, 100%) | ✅ |
 | D-11 | Observability & operational metrics | `src/observability/metrics.ts` | S26→S56 | ⬜ (present, unwired) |
 | D-12 | Data quality & lineage scoring | `src/dataquality/scoring.ts` | S27→S56 | `tests/unit/dataquality.test.ts` (10, 100%) | ✅ |
-| D-13 | Tenant config & entitlements | `src/tenancy/config.ts` | S28→S56 | ⬜ (present, unwired) |
+| D-13 | Tenant config & entitlements | `src/tenancy/config.ts` | S28→S56 | `tests/unit/tenancy.test.ts` (10, 100%) | ✅ |
 | D-14 | Usage / consumption billing | `src/usage/consumption.ts` | S29→S56 | ⬜ (present, unwired) |
 | D-15 | Contract amendment diffing | `src/amendments/diff.ts` | S30→S56 | ⬜ (present, unwired) |
 | D-16 | Peer benchmarking | `src/benchmarking/peer-benchmark.ts` | S31→S56 | ⬜ (present, unwired) |
@@ -70,7 +70,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | D-21 | Contract lifecycle (ramp, co-term) | `src/contracts/lifecycle.ts` | S36→S56 | ⬜ (present, unwired) |
 | D-22 | Revenue recognition (ASC 606 / IFRS 15) | `src/revrec/recognition.ts` | S37→S56 | ⬜ (present, unwired) |
 | D-23 | Transaction-price allocation | `src/allocation/transaction-price.ts` | S38→S56 | `tests/unit/transaction-price.test.ts` (9, 100%) | ✅ |
-| D-24 | Churn & expansion (NRR/GRR) | `src/churn/retention.ts` | S39→S56 | ⬜ (present, unwired) |
+| D-24 | Churn & expansion (NRR/GRR) | `src/churn/retention.ts` | S39→S56 | `tests/unit/churn.test.ts` (6, 100%) | ✅ |
 | D-25 | Safe leakage-detector DSL (no eval) | `src/detectors/dsl.ts` | S40→S56 | ⬜ (present, unwired) |
 | D-26 | Partner / reseller revenue splits | `src/partners/revenue-split.ts` | S41→S56 | ⬜ (present, unwired) |
 | D-27 | Double-entry journal postings | `src/journal/entries.ts` | S42→S56 | ⬜ (present, unwired) |

@@ -220,3 +220,21 @@ hash-tamper, twin-history-default, and object-payload cases.
 **Loop caught two test bugs:** zscore/mad datasets that didn't actually flag (MAD=0 for single-spike
 series), and a period-drop count that missed the 40→0 cliff. Fixed both; full suite **228 green, tsc 0**.
 **Loop state:** S56 batch 2 ✅ → 21 domain modules remaining.
+
+---
+
+## 2026-06-12 — S56 🔄 batch 3: forecast + churn + policy + tenancy
+
+**Built tests (100% all four metrics, all first-pass green):**
+- `forecast.test.ts` (12) — leakage run-rate annualization, confidence band, recovery projection
+  (open-only filter), renewal-risk scoring (proximity/health/escalator components, cap, annual vs
+  monthly), ranking + total-at-risk.
+- `churn.test.ts` (6) — NRR/GRR decomposition (expansion/contraction/churn), logo churn rate,
+  expansion-billing gap, quick-ratio (finite/infinite/zero).
+- `approval-policy.test.ts` (6) — first-match-wins ordered rules, all condition predicates
+  (min/max amount, leakage types, tiers, workIQOnly), default fallthrough, dup-id + <1-approval
+  guards, isSatisfied count+role checks.
+- `tenancy.test.ts` (10) — edition feature grants, override precedence, requireFeature, metered
+  consume with limit refusal (connectors/users/cases), monthly reset, settings fallback, cumulative tiers.
+
+**Executed here:** 34 tests. Full suite **261 green, tsc 0**. **Loop state:** S56 batch 3 ✅ → 17 modules left.

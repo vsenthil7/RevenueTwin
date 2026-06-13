@@ -368,3 +368,24 @@ Built `tests/negative/` (27 tests, executed on Windows host):
 
 Suite 510 tests (483 + 27), 0 fail, tsc 0 errors. Whole src tree (excl demo-live) still 100/100/100/100.
 No errors found this sprint (all 27 passed first run after the app2() helper-name fix).
+
+
+---
+
+## 2026-06-13 - S59 DONE: Postgres is the production default
+
+New `src/app/persistence-factory.ts`: resolveBackend(opts) + selectUnitOfWork(opts).
+- DATABASE_URL present -> postgres; absent -> memory; explicit backend overrides; forceMemory wins.
+- Postgres path requires databaseUrl AND an injected pgClientFactory, else throws (fail-fast; no
+  silent memory fallback in production). Core stays driver-free: real pg is reached only via the
+  injected factory; the default edge wires new Pool({connectionString}).
+
+Wired into `bootstrap.ts`: new opts databaseUrl/backend/pgClientFactory/forceMemory; explicit uow
+still wins (reports backend memory); BootstrapResult now carries backend.
+
+Tests: `tests/functional/persistence-default.test.ts` (12) using a fake PgClient recording
+BEGIN/COMMIT - proves postgres wiring with zero DB dependency. Whole src tree (excl demo-live)
+100/100/100/100; postgres-adapter.ts already covered by existing persistence tests.
+
+Errors found & fixed: test imported PgClient from the factory which only references it locally
+(TS2459); fixed by importing the type from postgres-adapter.ts directly. Suite 522 green, tsc 0.

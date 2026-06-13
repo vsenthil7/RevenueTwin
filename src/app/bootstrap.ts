@@ -7,6 +7,7 @@
  * bootstrap runs in-memory (demo) or against postgres (production) unchanged.
  */
 import { MemoryUnitOfWork } from '../persistence/memory-adapter.ts';
+import { selectUnitOfWork } from './persistence-factory.ts';
 import type { UnitOfWork } from '../persistence/repository.ts';
 import { UserStore } from '../identity/rbac.ts';
 import { RevenueTwinApp } from './application.ts';
@@ -19,6 +20,7 @@ export interface BootstrapResult {
   app: RevenueTwinApp;
   users: UserStore;
   uow: UnitOfWork;
+  backend: 'memory' | 'postgres';
 }
 
 /** Provision a standard set of demo users spanning the main roles. */
@@ -54,10 +56,18 @@ export async function bootstrap(opts: {
   currency?: string;
   seedCase?: boolean;
   clock?: () => string;
+  databaseUrl?: string;
+  backend?: 'memory' | 'postgres';
+  pgClientFactory?: import('./persistence-factory.ts').PgClientFactory;
+  forceMemory?: boolean;
 } = {}): Promise<BootstrapResult> {
-  const uow = opts.uow ?? new MemoryUnitOfWork();
   const tenantId = opts.tenantId ?? 'northwind-tenant';
   const currency = opts.currency ?? 'GBP';
+  // Persistence selection: explicit uow wins; otherwise select by backend/DATABASE_URL (S59).
+  const selected = opts.uow
+    ? { uow: opts.uow, backend: 'memory' as const }
+    : selectUnitOfWork({ tenantId, databaseUrl: opts.databaseUrl, backend: opts.backend, forceMemory: opts.forceMemory, pgClientFactory: opts.pgClientFactory });
+  const uow = selected.uow;
   const users = seedUsers();
   const app = new RevenueTwinApp(uow, { tenantId, currency }, opts.clock);
 
@@ -84,5 +94,5 @@ export async function bootstrap(opts: {
       await app.openCase(cfo, sc.customer, sc.findings, false, sc.at);
     }
   }
-  return { app, users, uow };
+  return { app, users, uow, backend: selected.backend };
 }

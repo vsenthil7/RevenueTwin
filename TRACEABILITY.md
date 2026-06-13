@@ -34,7 +34,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | P-01 | Storage-agnostic repository contracts | `src/persistence/repository.ts` | S13→S55 | `tests/unit/persistence.test.ts` (19, 100%) | ✅ |
 | P-02 | In-memory adapter (pilots/tests/demo) | `src/persistence/memory-adapter.ts` | S13→S55 | `tests/unit/persistence.test.ts` | ✅ |
 | P-03 | Postgres adapter, tenant-scoped, append-only DB trigger | `src/persistence/postgres-adapter.ts` | S13→S55 | `tests/unit/persistence.test.ts` | ✅ |
-| P-04 | **Postgres is the default in production** | `src/app/bootstrap.ts` | S59 | `tests/functional/persistence-default.test.ts` | ⬜ |
+| P-04 | **Postgres is the default in production** | `src/app/persistence-factory.ts` + `src/app/bootstrap.ts` | S59 | `tests/functional/persistence-default.test.ts` (12) | OK |
 
 ## 3. Identity, authZ, authN
 

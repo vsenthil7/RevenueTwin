@@ -50,8 +50,8 @@ could not compile until their imports existed; Block R wires and tests them.
 | D-01 | Connector ingestion + normalization | `src/connectors/*` | S14→S55 | `tests/unit/connectors.test.ts` (22, 100%) | ✅ |
 | D-02 | Work IQ extraction (rule + LLM seam) | `src/intent/extraction.ts` | S15→S55 | `tests/unit/extraction.test.ts` (12, 100%) | ✅ |
 | D-03 | Billing write-back (credit note / corrected line) | `src/billing/write-back.ts` | S16→S55 | `tests/unit/billing.test.ts` (9, 100%) | ✅ |
-| D-04 | Reporting / CFO analytics | `src/reporting/analytics.ts` | S19→S55 | ⬜ (present, unwired) |
-| D-05 | Bulk operations & scale | `src/bulk/operations.ts` | S20→S55 | ⬜ (present, unwired) |
+| D-04 | Reporting / CFO analytics | `src/reporting/analytics.ts` | S19→S56 | `tests/unit/analytics.test.ts` (8, 100%) | ✅ |
+| D-05 | Bulk operations & scale | `src/bulk/operations.ts` | S20→S56 | `tests/unit/operations.test.ts` (9, 100%) | ✅ |
 | D-06 | Multi-currency consolidation | `src/consolidation/fx-consolidation.ts` | S21→S56 | `tests/unit/fx-consolidation.test.ts` (8, 100%) | ✅ |
 | D-07 | Forecasting & at-risk revenue | `src/forecasting/forecast.ts` | S22→S56 | `tests/unit/forecast.test.ts` (12, 100%) | ✅ |
 | D-08 | Anomaly detection (z-score + MAD) | `src/anomaly/detection.ts` | S23→S56 | `tests/unit/anomaly.test.ts` (13, 100%) | ✅ |
@@ -73,10 +73,10 @@ could not compile until their imports existed; Block R wires and tests them.
 | D-24 | Churn & expansion (NRR/GRR) | `src/churn/retention.ts` | S39→S56 | `tests/unit/churn.test.ts` (6, 100%) | ✅ |
 | D-25 | Safe leakage-detector DSL (no eval) | `src/detectors/dsl.ts` | S40→S56 | `tests/unit/dsl.test.ts` (10, 100%) | ✅ |
 | D-26 | Partner / reseller revenue splits | `src/partners/revenue-split.ts` | S41→S56 | `tests/unit/revenue-split.test.ts` (11, 100%) | ✅ |
-| D-27 | Double-entry journal postings | `src/journal/entries.ts` | S42→S56 | ⬜ (present, unwired) |
-| D-28 | Customer segmentation | `src/segmentation/segments.ts` | S43→S56 | ⬜ (present, unwired) |
-| D-29 | Alerting & thresholds (hysteresis) | `src/alerts/alerting.ts` | S44→S56 | ⬜ (present, unwired) |
-| D-30 | Workflow & notifications (SLA) | `src/workflow/engine.ts` | S18→S56 | ⬜ (present, unwired) |
+| D-27 | Double-entry journal postings | `src/journal/entries.ts` | S42→S56 | `tests/unit/entries.test.ts` (8, 100%) | ✅ |
+| D-28 | Customer segmentation | `src/segmentation/segments.ts` | S43→S56 | `tests/unit/segments.test.ts` (9, 100%) | ✅ |
+| D-29 | Alerting & thresholds (hysteresis) | `src/alerts/alerting.ts` | S44→S56 | `tests/unit/alerting.test.ts` (8, 100%) | ✅ |
+| D-30 | Workflow & notifications (SLA) | `src/workflow/engine.ts` | S18→S56 | `tests/unit/workflow.test.ts` (11, 100%) | ✅ |
 
 ## 5. Integration & product surface
 
@@ -99,7 +99,7 @@ could not compile until their imports existed; Block R wires and tests them.
 
 | Req ID | Requirement | Sprint | Status |
 |---|---|---|---|
-| T-01 | Backend unit coverage 100% (line/branch/function/statement) | S55–S56 | ⬜ |
+| T-01 | Backend unit coverage 100% (line/branch/function/statement) | S55–S56 | ✅ (non-app src 100%) |
 | T-02 | Functional coverage 100% of documented flows | S57 | ⬜ |
 | T-03 | Negative coverage 100% of failure/adversarial paths | S58 | ⬜ |
 | T-04 | Front-end (web) logic coverage 100% via jsdom (executes here) | S61 | ⬜ |

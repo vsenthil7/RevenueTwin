@@ -295,3 +295,21 @@ Full suite **345 green, tsc 0**. **Loop state:** S56 batch 5 ✅ → 8 modules l
 empty-shares check per project principle), then covered the rounding-correction + commission-break
 branches. Full suite **389 green, tsc 0**. **Loop state:** S56 batch 6 ✅ → 4 modules left
 (journal, segments, alerts, workflow).
+
+---
+
+## 2026-06-12 — S56 ✅ COMPLETE — unit pyramid pt.2 (entire non-app src at 100%)
+
+**Final batch built (100% each):** `entries.test.ts` (8, double-entry balance + standard postings +
+movements), `segments.test.ts` (9, tier/health/band/cohort/triage), `alerting.test.ts` (8, hysteresis
+fire/clear state machine + dedup), `workflow.test.ts` (11, intake/assign/review/close/SLA-sweep/inbox),
+`analytics.test.ts` (8, portfolio summary + leakage-by-type + timeline + period-close), `operations.test.ts`
+(9, filter/sort/paginate/runQuery/batchDecide/summarize).
+
+**Coverage milestone:** full gate over `src/**` excluding `src/app/**` is **100% lines / 100% branches /
+100% functions / 100% statements**. Two modules that had slipped (reporting analytics, bulk operations)
+were caught by the whole-tree gate and brought to 100%.
+
+**Loop fixed:** workflow inbox test clock ran out of ISO values (assign consumes 2 clock reads) — gave it
+a full ISO sequence. Full suite **440 tests, 0 fail, tsc 0 errors**.
+**Loop state:** S56 ✅ → next S57 (functional suite over the app layer: RevenueTwinApp end-to-end flows).

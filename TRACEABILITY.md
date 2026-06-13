@@ -52,7 +52,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | D-03 | Billing write-back (credit note / corrected line) | `src/billing/write-back.ts` | S16→S55 | `tests/unit/billing.test.ts` (9, 100%) | ✅ |
 | D-04 | Reporting / CFO analytics | `src/reporting/analytics.ts` | S19→S55 | ⬜ (present, unwired) |
 | D-05 | Bulk operations & scale | `src/bulk/operations.ts` | S20→S55 | ⬜ (present, unwired) |
-| D-06 | Multi-currency consolidation | `src/consolidation/fx-consolidation.ts` | S21→S56 | ⬜ (present, unwired) |
+| D-06 | Multi-currency consolidation | `src/consolidation/fx-consolidation.ts` | S21→S56 | `tests/unit/fx-consolidation.test.ts` (8, 100%) | ✅ |
 | D-07 | Forecasting & at-risk revenue | `src/forecasting/forecast.ts` | S22→S56 | ⬜ (present, unwired) |
 | D-08 | Anomaly detection (z-score + MAD) | `src/anomaly/detection.ts` | S23→S56 | ⬜ (present, unwired) |
 | D-09 | Dispute & negotiation management | `src/disputes/negotiation.ts` | S24→S56 | ⬜ (present, unwired) |
@@ -69,7 +69,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | D-20 | Tax & jurisdiction engine | `src/tax/jurisdiction.ts` | S35→S56 | ⬜ (present, unwired) |
 | D-21 | Contract lifecycle (ramp, co-term) | `src/contracts/lifecycle.ts` | S36→S56 | ⬜ (present, unwired) |
 | D-22 | Revenue recognition (ASC 606 / IFRS 15) | `src/revrec/recognition.ts` | S37→S56 | ⬜ (present, unwired) |
-| D-23 | Transaction-price allocation | `src/allocation/transaction-price.ts` | S38→S56 | ⬜ (present, unwired) |
+| D-23 | Transaction-price allocation | `src/allocation/transaction-price.ts` | S38→S56 | `tests/unit/transaction-price.test.ts` (9, 100%) | ✅ |
 | D-24 | Churn & expansion (NRR/GRR) | `src/churn/retention.ts` | S39→S56 | ⬜ (present, unwired) |
 | D-25 | Safe leakage-detector DSL (no eval) | `src/detectors/dsl.ts` | S40→S56 | ⬜ (present, unwired) |
 | D-26 | Partner / reseller revenue splits | `src/partners/revenue-split.ts` | S41→S56 | ⬜ (present, unwired) |

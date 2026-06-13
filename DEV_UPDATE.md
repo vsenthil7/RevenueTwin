@@ -193,3 +193,16 @@ hash-tamper, twin-history-default, and object-payload cases.
 **Loop chased branch coverage to 100%** on connectors (optNumber string/null branches) and persistence.
 **Executed here:** S55 total **75 tests**. Full suite now **189 tests, tsc 0 errors**.
 **Loop state:** S55 ✅ → next S56 (unit pyramid pt.2: the ~30 revenue-domain modules).
+
+---
+
+## 2026-06-12 — S56 🔄 unit pyramid pt.2 (batch 1: consolidation + allocation)
+
+**Built tests (100% all four metrics, executed here):**
+- `fx-consolidation.test.ts` (8) — FxRateBook direct/inverse/identity resolution, missing-rate throw,
+  toReporting, consolidate (mixed currencies, breakdown, per-currency aggregation), concentration
+  including zero-total branch.
+- `transaction-price.test.ts` (9) — ASC 606 relative-SSP allocation (exact remainder distribution),
+  residual method, discount allocation, currency guards, sum-exactly verifier.
+
+**Executed here:** 17 tests. **Loop state:** S56 batch 1 ✅ → 23 domain modules remaining.

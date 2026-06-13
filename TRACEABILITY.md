@@ -41,7 +41,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | Req ID | Requirement | Module | Sprint | Test artifact | Status |
 |---|---|---|---|---|---|
 | I-01 | Deny-by-default RBAC, 7 roles, customer scoping | `src/identity/rbac.ts` | S17→S55 | `tests/unit/rbac.test.ts` (13, 100%) | ✅ |
-| I-02 | **Real auth seam (OIDC/Entra `verifyToken`)**, not header shim | `src/identity/auth.ts` (new) + `src/app/server.ts` | S60 | `tests/negative/auth.test.ts` | ⬜ |
+| I-02 | **Real auth seam (OIDC/Entra `verifyToken`)**, not header shim | `src/identity/auth.ts` + `src/app/server.ts` | S60 | `tests/functional/auth.test.ts` (12) | OK |
 
 ## 4. Domain breadth (delivered modules — wired & tested in Block R)
 

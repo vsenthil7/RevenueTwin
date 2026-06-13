@@ -14,6 +14,7 @@ import { resolve, extname, normalize } from 'node:path';
 import { RevenueTwinApp, AppError } from './application.ts';
 import { UserStore, type AuthenticatedPrincipal } from '../identity/rbac.ts';
 import { RuleBasedExtractor } from '../intent/extraction.ts';
+import { bearerToken, type TokenVerifier } from '../identity/auth.ts';
 
 const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -26,6 +27,8 @@ export interface ServerDeps {
   app: RevenueTwinApp;
   users: UserStore;
   webRoot: string;
+  /** Optional token verifier (OIDC/Entra or DevTokenIssuer). When absent, the x-user-id shim is used. */
+  verifier?: TokenVerifier;
 }
 
 async function readBody(req: IncomingMessage): Promise<unknown> {
@@ -53,7 +56,25 @@ function errorStatus(e: unknown): number {
 }
 
 /** Resolve the principal from the x-user-id header. Throws AppError(forbidden) if missing/unknown. */
-export function resolvePrincipal(users: UserStore, req: IncomingMessage): AuthenticatedPrincipal {
+export async function resolvePrincipal(deps: ServerDeps, req: IncomingMessage): Promise<AuthenticatedPrincipal> {
+  const { users, verifier } = deps;
+  // Preferred path: verify a bearer token and map its subject to a provisioned user.
+  if (verifier) {
+    const token = bearerToken(req.headers['authorization'] as string | undefined);
+    if (!token) throw new AppError('Missing bearer token', 'forbidden');
+    let sub: string;
+    try {
+      sub = (await verifier.verify(token)).sub;
+    } catch {
+      throw new AppError('Invalid or expired token', 'forbidden');
+    }
+    try {
+      return users.authenticate(sub);
+    } catch {
+      throw new AppError(`Token subject '+sub+' is not a provisioned user`, 'forbidden');
+    }
+  }
+  // Fallback (no verifier configured): the x-user-id demo shim.
   const userId = req.headers['x-user-id'];
   if (typeof userId !== 'string' || userId.length === 0) {
     throw new AppError('Missing x-user-id header', 'forbidden');
@@ -61,7 +82,7 @@ export function resolvePrincipal(users: UserStore, req: IncomingMessage): Authen
   try {
     return users.authenticate(userId);
   } catch {
-    throw new AppError(`Unknown or inactive user '${userId}'`, 'forbidden');
+    throw new AppError(`Unknown or inactive user '+userId+'`, 'forbidden');
   }
 }
 
@@ -79,7 +100,7 @@ export async function handleApi(
     return { status: 200, body: { ok: true, tenant: app.tenantId, currency: app.currency } };
   }
 
-  const principal = resolvePrincipal(users, req);
+  const principal = await resolvePrincipal(deps, req);
 
   if (method === 'GET' && path === '/api/cases') {
     return { status: 200, body: await app.listCases(principal) };

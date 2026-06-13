@@ -41,11 +41,11 @@ function fakeRes(): ServerResponse & { _status: number; _body: string } {
 }
 const Q = (s = '') => new URLSearchParams(s);
 
-test('resolvePrincipal resolves known user, rejects missing/unknown', async () => {
+test('resolvePrincipal (shim) resolves known user, rejects missing/unknown', async () => {
   const d = await deps();
-  assert.equal(resolvePrincipal(d.users, fakeReq({ 'x-user-id': 'cfo' })).userId, 'cfo');
-  assert.throws(() => resolvePrincipal(d.users, fakeReq({})), /Missing x-user-id/);
-  assert.throws(() => resolvePrincipal(d.users, fakeReq({ 'x-user-id': 'ghost' })), /Unknown or inactive/);
+  assert.equal((await resolvePrincipal(d, fakeReq({ 'x-user-id': 'cfo' }))).userId, 'cfo');
+  await assert.rejects(() => resolvePrincipal(d, fakeReq({})), /Missing x-user-id/);
+  await assert.rejects(() => resolvePrincipal(d, fakeReq({ 'x-user-id': 'ghost' })), /Unknown or inactive/);
 });
 
 test('GET /api/health is unauthenticated', async () => {

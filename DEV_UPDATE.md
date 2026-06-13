@@ -389,3 +389,29 @@ BEGIN/COMMIT - proves postgres wiring with zero DB dependency. Whole src tree (e
 
 Errors found & fixed: test imported PgClient from the factory which only references it locally
 (TS2459); fixed by importing the type from postgres-adapter.ts directly. Suite 522 green, tsc 0.
+
+
+---
+
+## 2026-06-13 - S60 DONE: real auth seam (verifyToken) replaces x-user-id shim
+
+New `src/identity/auth.ts`:
+- TokenVerifier interface { verify(token): Promise<VerifiedClaims> } - the seam the server depends on.
+- DevTokenIssuer (HMAC-SHA256): issue(sub, ttl) + verify with timing-safe signature compare,
+  expiry check, malformed/empty-subject rejection. Offline + deterministic (injectable seconds clock).
+- OidcConfig interface (issuer/audience/jwksUri) documents the production Entra/JWKS verifier that
+  plugs in behind TokenVerifier; the app depends only on the interface so it stays offline-safe.
+- bearerToken() parses Authorization: Bearer <t>, returns null on absent/malformed.
+
+`src/app/server.ts`: ServerDeps gains optional verifier; resolvePrincipal is now async and prefers
+the bearer-token path (verify -> sub -> UserStore.authenticate), falling back to the x-user-id shim
+only when no verifier is configured. Backward compatible: all existing shim tests still pass.
+
+Tests: `tests/functional/auth.test.ts` (12): issue/verify round-trip, weak-secret reject, tampered
+signature, wrong-secret, expired, malformed token + malformed claims (valid sig over non-JSON),
+empty subject; bearerToken parsing; server dispatch with a verifier (valid 200, missing/invalid/
+unprovisioned-subject all 403). Suite 534 green, tsc 0, whole src (excl demo-live) 100/100/100/100.
+
+Errors found & fixed: malformed-claims branch (auth.ts 73-74) needed a validly-signed token whose
+payload is valid base64url but not JSON - built one with node:crypto in the test; two implicit-any
+arrow params (TS7006) typed.

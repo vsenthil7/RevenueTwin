@@ -347,3 +347,24 @@ Errors found & fixed this sprint:
 Environment note: the build was reconstructed in a Linux container in prior sessions; this session
 ran on the Windows host. Verified npm ci clean + 483 tests + tsc 0 on Windows, so the suite is
 reproducible outside the container, not container-only.
+
+
+---
+
+## 2026-06-13 - S58 DONE: negative / adversarial suite
+
+Built `tests/negative/` (27 tests, executed on Windows host):
+- audit-tamper.test.ts (7): clean chain verifies; doctoring a past entry detail breaks verifyChain;
+  re-hashing the doctored entry to look self-consistent STILL breaks the next entry prevHash link;
+  MemoryAuditStore.append rejects seq-gap, prevHash mismatch, and invalid hash; genesis/link asserts.
+- authz.test.ts (9): auditor cannot open (no triage); revops cannot reject / read audit / period-close;
+  out-of-scope access is forbidden (not silently empty); inactive user, no-role, unknown-role,
+  unknown-user-id all rejected; a scoped principal cannot widen scope by passing another customerId.
+- malformed-input.test.ts (11): wrong-typed POST bodies, invalid decision verb, non-object doc,
+  non-numeric ROI -> bad_request; HTTP mapping 403 (missing/unknown user), 404 (unknown case),
+  400 (invalid JSON); injection-as-data: normalizeBatch turns bad records into rejects not crashes,
+  RuleBasedExtractor ignores prompt-injection text and extracts only the structured uplift,
+  out-of-range percentages cannot smuggle a signal.
+
+Suite 510 tests (483 + 27), 0 fail, tsc 0 errors. Whole src tree (excl demo-live) still 100/100/100/100.
+No errors found this sprint (all 27 passed first run after the app2() helper-name fix).

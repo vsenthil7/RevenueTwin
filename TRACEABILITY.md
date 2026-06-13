@@ -20,7 +20,7 @@ could not compile until their imports existed; Block R wires and tests them.
 |---|---|---|---|---|---|
 | F-01 | Money is exact integer minor units; no float drift | `src/money/money.ts` | S47 | `tests/unit/money.test.ts` (28 tests, 100%) | ✅ |
 | F-02 | Canonical revenue domain model | `src/core/model.ts` | S48 | `tests/unit/model.test.ts` (7, 100%) | ✅ |
-| F-03 | Tamper-evident append-only audit (SHA-256 chain) | `src/core/audit.ts` | S49 | `tests/unit/audit.test.ts` (12, 100%) | ✅ |
+| F-03 | Tamper-evident append-only audit (SHA-256 chain) | `src/core/audit.ts` | S49->S58 | `tests/unit/audit.test.ts` (12, 100%) + `tests/negative/audit-tamper.test.ts` (7) | OK |
 | F-04 | Deterministic reconciliation decides pass/fail (never an LLM) | `src/core/reconciliation.ts` | S50 | `tests/unit/reconciliation.test.ts` (18, 100%) | ✅ |
 | F-05 | 8-state revenue-twin machine, audited transitions | `src/core/twin.ts` | S51 | `tests/unit/twin.test.ts` (12, 100%) | ✅ |
 | F-06 | Work IQ commercial-intent moat; blind-vs-sighted recall delta | `src/intent/workiq.ts` + `src/core/golden-thread.ts` | S52 | `tests/functional/workiq.test.ts` (12, 100%) | ✅ |
@@ -101,7 +101,7 @@ could not compile until their imports existed; Block R wires and tests them.
 |---|---|---|---|
 | T-01 | Backend unit coverage 100% (line/branch/function/statement) | S55–S56 | ✅ (non-app src 100%) |
 | T-02 | Functional coverage 100% of documented flows | S57 | OK (app layer 100%; whole src tree 100/100/100/100) |
-| T-03 | Negative coverage 100% of failure/adversarial paths | S58 | ⬜ |
+| T-03 | Negative coverage of failure/adversarial paths | S58 | OK (`tests/negative/` 27: tamper, RBAC 403/scope, malformed/injection, HTTP 400/403/404/500) |
 | T-04 | Front-end (web) logic coverage 100% via jsdom (executes here) | S61 | ⬜ |
 | T-05 | Playwright web E2E green in CI (desktop + mobile) | S61 | ⬜ |
 | T-06 | Flutter mobile tests green in CI | S62 | ⬜ |

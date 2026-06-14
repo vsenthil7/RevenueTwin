@@ -379,3 +379,32 @@ test('mountLive: Import tab -> upload CSV -> renders recoverable result', async 
   const summary = doc.querySelector('[data-testid="import-summary"]');
   assert.ok(summary!.textContent!.includes('Globex'));
 });
+
+test('mountLive: Import tab auto-maps buyer-named headers + template button (S66)', async () => {
+  const doc = dom();
+  let importBody = null;
+  const routes = {
+    '/api/health': { ok: true },
+    '/api/cases': [],
+    '/api/import-template': { template: 'customer,line_id,type' },
+    '/api/import': { totalRecoverableFormatted: 'GBP 1,200.00', rowsAccepted: 1, rowsRejected: 0, summaries: [{ customerId: 'Acme', findingCount: 1, netRecoverableFormatted: 'GBP 1,200.00' }], rejects: [] },
+  };
+  const baseFetch = fakeFetch(routes);
+  const captureFetch = async (url, opts) => {
+    if (typeof url === 'string' && url.includes('/api/import') && url.indexOf('template') < 0 && opts && opts.body) importBody = JSON.parse(opts.body);
+    return baseFetch(url, opts);
+  };
+  const api = { createClient, probe, mapCase };
+  await app.mountLive(doc, { api, baseUrl: 'http://api', fetchImpl: captureFetch });
+  (doc.querySelector('[data-testid="tab-import"]')).click();
+  const tmpl = doc.querySelector('[data-testid="import-template"]');
+  assert.ok(tmpl, 'template button rendered');
+  const ta = doc.querySelector('[data-testid="import-text"]');
+  ta.value = 'Account,Invoice Number,Category,Expected Amount,Invoice Amount,CCY\nAcme,INV-1,price_changed,12000,10800,GBP';
+  (doc.querySelector('[data-testid="import-run"]')).click();
+  await new Promise((r) => setTimeout(r, 10));
+  assert.ok(importBody, 'import POST was made');
+  assert.ok(importBody.mapping, 'a mapping was auto-suggested and sent');
+  assert.equal(importBody.mapping['Invoice Amount'], 'actual');
+  assert.equal(importBody.mapping['Account'], 'customer');
+});

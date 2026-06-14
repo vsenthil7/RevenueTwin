@@ -473,7 +473,7 @@ breakdown — the depth is visible, not buried in libraries. S0–S46 complete.
 | Sprint | Title | Scope | Status | Tests |
 | --- | --- | --- | --- | --- |
 | S65 | Real auth (OIDC/Entra) | `src/identity/oidc.ts` OidcTokenVerifier: real RS256 JWT verification against a cached JWKS (Node crypto only, JwksFetcher injected so offline-testable), with iss/aud/exp/nbf/sub checks and key-rotation refresh. Wired into `scripts/serve-web.ts`: OIDC_ISSUER/OIDC_AUDIENCE/OIDC_JWKS_URI env -> real verifier (HTTPS JWKS fetch); else x-user-id shim. Server already had the verifier slot (S60). Live-verified over HTTP: valid RS256 bearer -> 200, bad token -> 403, no token -> 403. | ✅ executed here | 15 (oidc) |
-| S66 | CSV field mapping + template | Downloadable template + column-mapping so a real CFO export imports without renaming columns. | 🟡 planned | TBD |
+| S66 | CSV field mapping + template | `src/import/mapping.ts`: suggestMapping (alias table), applyMapping (rename + collision guard), csvTemplate. Wired into importCsv (optional mapping), app.importCsvCases, POST /api/import (accepts mapping), GET /api/import-template. UI: Download-template button + client-side suggestMappingFromCsv auto-maps buyer headers (Invoice Amount to actual, Account to customer) before import. | done (executed here) | 8 unit + 2 functional + 1 jsdom |
 | S67 | File upload | Real file upload in the import UI (input type=file -> read -> import). | 🟡 planned | TBD |
 | S68 | Persisted + exportable import runs | Named, saved, revisitable import run + exportable board/audit pack (via evidence module). | 🟡 planned | TBD |
 | S69 | Guided first-run onboarding | New user routed straight to upload-your-own-data, not demo-data triage. | 🟡 planned | TBD |

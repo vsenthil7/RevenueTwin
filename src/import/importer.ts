@@ -8,6 +8,7 @@ import type { LeakageType, LeakageCase, VarianceFinding } from '../core/model.ts
 import { buildFinding, createCase, caseNetRecoverable, type VarianceInput } from '../core/reconciliation.ts';
 import { fromDecimal, sum, format, type Money, type CurrencyCode } from '../money/money.ts';
 import { parseCsvRecords } from './csv.ts';
+import { applyMapping, type ColumnMapping } from './mapping.ts';
 
 export class ImportError extends Error {
   constructor(message: string) { super(message); this.name = 'ImportError'; }
@@ -42,7 +43,7 @@ export interface ImportResult {
   readonly currency: CurrencyCode;
 }
 
-export interface ImportOptions { readonly now?: () => string; }
+export interface ImportOptions { readonly now?: () => string; readonly mapping?: ColumnMapping; }
 
 function reqNumber(rec: Record<string, string>, key: string, rowNo: number): number {
   const raw = rec[key];
@@ -91,8 +92,10 @@ export function rowToVarianceInput(rec: Record<string, string>, rowNo: number, c
  */
 export function importCsv(text: string, opts: ImportOptions = {}): ImportResult {
   const now = opts.now ?? (() => new Date().toISOString());
-  const records = parseCsvRecords(text);
-  if (records.length === 0) throw new ImportError('CSV has no data rows');
+  const parsed = parseCsvRecords(text);
+  if (parsed.length === 0) throw new ImportError('CSV has no data rows');
+  // S66: if a column mapping is supplied, rename the buyer headers to our canonical names first.
+  const records = opts.mapping ? applyMapping(parsed, opts.mapping) : parsed;
   const have = new Set(Object.keys(records[0]!));
   for (const col of REQUIRED_COLUMNS) {
     if (!have.has(col)) throw new ImportError('CSV missing required column: ' + col);

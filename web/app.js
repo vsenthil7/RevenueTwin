@@ -153,9 +153,35 @@ export function importResultHTML(result) {
 }
 
 
+// S66: client-side header auto-mapping so buyer-named CSV columns import without manual config.
+const CLIENT_ALIASES = {
+  customer: 'customer', customername: 'customer', account: 'customer', accountname: 'customer', client: 'customer', clientname: 'customer',
+  lineid: 'line_id', line: 'line_id', invoiceid: 'line_id', invoicenumber: 'line_id', invoiceno: 'line_id', reference: 'line_id', ref: 'line_id',
+  type: 'type', leakagetype: 'type', category: 'type', issuetype: 'type',
+  expected: 'expected', expectedamount: 'expected', contractamount: 'expected', shouldbe: 'expected', entitled: 'expected', entitledamount: 'expected',
+  actual: 'actual', actualamount: 'actual', invoiceamount: 'actual', billed: 'actual', billedamount: 'actual', invoiced: 'actual',
+  currency: 'currency', ccy: 'currency', currencycode: 'currency',
+  confidence: 'confidence', conf: 'confidence', agedays: 'age_days', age: 'age_days', daysoutstanding: 'age_days', dayssinceinvoice: 'age_days',
+  contractstrength: 'contract_strength', strength: 'contract_strength', field: 'field', name: 'name', description: 'name', note: 'name', notes: 'name',
+};
+export function suggestMappingFromCsv(csv) {
+  const firstLine = (csv || String.fromCharCode()).split(String.fromCharCode(10))[0] || String.fromCharCode();
+  const headers = firstLine.split(String.fromCharCode(44));
+  const mapping = {};
+  const targets = {};
+  for (const h of headers) {
+    const raw = h.trim();
+    const norm = raw.toLowerCase().split(String.fromCharCode()).filter((c) => (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')).join(String.fromCharCode());
+    const canonical = CLIENT_ALIASES[norm];
+    if (canonical && !targets[canonical] && raw !== canonical) { mapping[raw] = canonical; targets[canonical] = true; }
+  }
+  return Object.keys(mapping).length > 0 ? mapping : undefined;
+}
+
 export function importPanelHTML() {
   return '<h2>Import your billing data</h2>'
-    + '<p class="conf">Paste CSV with columns: <b>customer, line_id, type, expected, actual, currency</b> (optional: confidence, age_days, contract_strength, field, name). The engine finds your recoverable revenue.</p>'
+    + '<p class="conf">Paste CSV with columns: <b>customer, line_id, type, expected, actual, currency</b> (optional: confidence, age_days, contract_strength, field, name). We auto-map common header names like Invoice Amount or Account.</p>'
+    + '<p><button data-testid="import-template" class="btn">Download CSV template</button></p>'
     + '<textarea data-testid="import-text" rows="10" style="width:100%;font-family:monospace;font-size:13px" placeholder="customer,line_id,type,expected,actual,currency&#10;Acme,INV-1,price_changed,12000,10800,GBP"></textarea>'
     + '<p><button data-testid="import-run" class="btn primary">Find my recoverable revenue</button></p>';
 }
@@ -266,12 +292,23 @@ export async function mountLive(doc, deps) {
         return;
       }
       bodyEl.innerHTML = importPanelHTML();
+      const tmpl = bodyEl.querySelector('[data-testid="import-template"]');
+      if (tmpl) tmpl.addEventListener('click', async () => {
+        try {
+          const r = await client.importTemplate();
+          const blob = new Blob([r.template], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = doc.createElement('a'); a.href = url; a.download = 'revenuetwin-template.csv'; a.click();
+          URL.revokeObjectURL(url);
+        } catch (e) { /* non-fatal */ }
+      });
       const run = bodyEl.querySelector('[data-testid="import-run"]');
       const ta = bodyEl.querySelector('[data-testid="import-text"]');
       if (run && ta) run.addEventListener('click', async () => {
-        const csv = ta.value || '';
+        const csv = ta.value || String.fromCharCode();
         if (!csv.trim()) return;
-        try { state.importResult = await client.importCsv(csv); }
+        const mapping = suggestMappingFromCsv(csv);
+        try { state.importResult = await client.importCsv(csv, mapping); }
         catch (e) { state.importResult = { totalRecoverableFormatted: 'import failed', summaries: [], rejects: [{ row: 0, reason: String(e && e.message || e) }] }; }
         await reloadIfPossible();
         render();

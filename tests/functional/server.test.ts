@@ -269,3 +269,23 @@ test('POST /api/import: missing/empty csv is a 400-class AppError', async () => 
   await assert.rejects(() => handleApi(d, 'POST', '/api/import', Q(), {}, fakeReq({ 'x-user-id': 'cfo' }, 'POST')), /csv .* is required/);
   await assert.rejects(() => handleApi(d, 'POST', '/api/import', Q(), { csv: '' }, fakeReq({ 'x-user-id': 'cfo' }, 'POST')), /csv .* is required/);
 });
+
+test('POST /api/import: applies a column mapping for buyer-named headers (S66)', async () => {
+  const d = await deps();
+  const csv = ['Account,Invoice Number,Category,Expected Amount,Invoice Amount,CCY', 'acme,INV-1,price_changed,12000,10800,GBP'].join('\n');
+  const mapping = { Account: 'customer', 'Invoice Number': 'line_id', Category: 'type', 'Expected Amount': 'expected', 'Invoice Amount': 'actual', CCY: 'currency' };
+  const r = await handleApi(d, 'POST', '/api/import', Q(), { csv, at: '2026-04-02T00:00:00.000Z', mapping }, fakeReq({ 'x-user-id': 'cfo' }, 'POST'));
+  assert.equal(r.status, 200);
+  const body = r.body as { cases: unknown[]; totalRecoverable: { amount: number } };
+  assert.equal(body.cases.length, 1);
+  assert.ok(body.totalRecoverable.amount > 0);
+});
+
+test('GET /api/import-template: returns the canonical template CSV', async () => {
+  const d = await deps();
+  const r = await handleApi(d, 'GET', '/api/import-template', Q(), undefined, fakeReq({ 'x-user-id': 'cfo' }, 'GET'));
+  assert.equal(r.status, 200);
+  const body = r.body as { template: string };
+  assert.ok(body.template.includes('customer,line_id,type'));
+  assert.ok(body.template.includes('Acme Corp'));
+});

@@ -15,6 +15,7 @@ import { RevenueTwinApp, AppError } from './application.ts';
 import { UserStore, type AuthenticatedPrincipal } from '../identity/rbac.ts';
 import { RuleBasedExtractor } from '../intent/extraction.ts';
 import { bearerToken, type TokenVerifier } from '../identity/auth.ts';
+import { csvTemplate } from '../import/mapping.ts';
 
 const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -137,10 +138,13 @@ export async function handleApi(
     return { status: 200, body: { event: ev } };
   }
   if (method === 'POST' && path === '/api/import') {
-    const b = body as { csv?: unknown; at?: string };
+    const b = body as { csv?: unknown; at?: string; mapping?: import('../import/mapping.ts').ColumnMapping };
     if (typeof b.csv !== 'string' || b.csv.length === 0) throw new AppError('csv (non-empty string) is required');
-    const result = await app.importCsvCases(principal, b.csv, b.at);
+    const result = await app.importCsvCases(principal, b.csv, b.at, b.mapping);
     return { status: 200, body: result };
+  }
+  if (method === 'GET' && path === '/api/import-template') {
+    return { status: 200, body: { template: csvTemplate() } };
   }
   if (method === 'GET' && path === '/api/portfolio') {
     return { status: 200, body: await app.portfolioSummary(principal) };

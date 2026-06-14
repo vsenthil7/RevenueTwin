@@ -96,10 +96,10 @@ export class RevenueTwinApp {
    * how a CFO sees THEIR leaked revenue rather than the seeded demo. Cases for out-of-scope
    * customers are skipped (reported), never persisted, so scoping is preserved.
    */
-  async importCsvCases(principal: AuthenticatedPrincipal, csv: string, at?: string): Promise<import('../import/importer.ts').ImportResult> {
+  async importCsvCases(principal: AuthenticatedPrincipal, csv: string, at?: string, mapping?: import('../import/mapping.ts').ColumnMapping): Promise<import('../import/importer.ts').ImportResult> {
     requirePerm(principal, 'case:triage');
     const now = at ?? new Date().toISOString();
-    const result = importCsv(csv, { now: () => now });
+    const result = importCsv(csv, { now: () => now, ...(mapping ? { mapping } : {}) });
     const persisted: LeakageCase[] = [];
     const skipped: import('../import/importer.ts').ImportRowReject[] = [...result.rejects];
     await this.uow.transaction(async () => {

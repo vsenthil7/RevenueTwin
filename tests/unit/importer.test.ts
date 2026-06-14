@@ -116,3 +116,18 @@ test('REQUIRED_COLUMNS is the documented contract', () => {
 test('ImportError carries its name', () => {
   const e = new ImportError('x'); assert.equal(e.name, 'ImportError');
 });
+
+test('importCsv: applies a column mapping so buyer-named headers import correctly (S66)', () => {
+  // Buyer file uses THEIR own headers; a mapping renames them to our canonical columns.
+  const csv = ['Account,Invoice Number,Category,Expected Amount,Invoice Amount,CCY',
+    'Acme,INV-9,price_changed,12000,10800,GBP',
+  ].join('\n');
+  const mapping = {
+    Account: 'customer', 'Invoice Number': 'line_id', Category: 'type',
+    'Expected Amount': 'expected', 'Invoice Amount': 'actual', CCY: 'currency',
+  };
+  const res = importCsv(csv, { now: NOW, mapping });
+  assert.equal(res.cases.length, 1);
+  assert.equal(res.rowsAccepted, 1);
+  assert.ok(res.totalRecoverable.amount > 0);
+});

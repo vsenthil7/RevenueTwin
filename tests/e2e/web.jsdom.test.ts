@@ -408,3 +408,22 @@ test('mountLive: Import tab auto-maps buyer-named headers + template button (S66
   assert.equal(importBody.mapping['Invoice Amount'], 'actual');
   assert.equal(importBody.mapping['Account'], 'customer');
 });
+
+test('mountLive: Import tab file upload fills the textarea (S67)', async () => {
+  const doc = dom();
+  const routes = { '/api/health': { ok: true }, '/api/cases': [] };
+  const api = { createClient, probe, mapCase };
+  await app.mountLive(doc, { api, baseUrl: 'http://api', fetchImpl: fakeFetch(routes) });
+  (doc.querySelector('[data-testid="tab-import"]')).click();
+  const fileInput = doc.querySelector('[data-testid="import-file"]');
+  assert.ok(fileInput, 'file input rendered');
+  const csv = 'customer,line_id,type,expected,actual,currency\nAcme,INV-1,price_changed,12000,10800,GBP';
+  const file = new File([csv], 'billing.csv', { type: 'text/csv' });
+  Object.defineProperty(fileInput, 'files', { value: [file], configurable: true });
+  fileInput.dispatchEvent(new doc.defaultView.Event('change'));
+  await new Promise((r) => setTimeout(r, 20));
+  const ta = doc.querySelector('[data-testid="import-text"]');
+  assert.ok(ta.value.includes('Acme,INV-1'), 'textarea filled from file');
+  const fn = doc.querySelector('[data-testid="import-filename"]');
+  assert.equal(fn.textContent, 'billing.csv');
+});

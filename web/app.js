@@ -182,6 +182,7 @@ export function importPanelHTML() {
   return '<h2>Import your billing data</h2>'
     + '<p class="conf">Paste CSV with columns: <b>customer, line_id, type, expected, actual, currency</b> (optional: confidence, age_days, contract_strength, field, name). We auto-map common header names like Invoice Amount or Account.</p>'
     + '<p><button data-testid="import-template" class="btn">Download CSV template</button></p>'
+    + '<p><label class="btn">Choose CSV file<input data-testid="import-file" type="file" accept=".csv,text/csv" style="display:none"></label> <span data-testid="import-filename" class="conf"></span></p>'
     + '<textarea data-testid="import-text" rows="10" style="width:100%;font-family:monospace;font-size:13px" placeholder="customer,line_id,type,expected,actual,currency&#10;Acme,INV-1,price_changed,12000,10800,GBP"></textarea>'
     + '<p><button data-testid="import-run" class="btn primary">Find my recoverable revenue</button></p>';
 }
@@ -301,6 +302,16 @@ export async function mountLive(doc, deps) {
           const a = doc.createElement('a'); a.href = url; a.download = 'revenuetwin-template.csv'; a.click();
           URL.revokeObjectURL(url);
         } catch (e) { /* non-fatal */ }
+      });
+      const fileInput = bodyEl.querySelector('[data-testid="import-file"]');
+      const fileName = bodyEl.querySelector('[data-testid="import-filename"]');
+      if (fileInput) fileInput.addEventListener('change', async () => {
+        const f = fileInput.files && fileInput.files[0];
+        if (!f) return;
+        if (fileName) fileName.textContent = f.name;
+        const text = typeof f.text === 'function' ? await f.text() : await new Promise((res) => { const rd = new FileReader(); rd.onload = () => res(String(rd.result || String.fromCharCode())); rd.readAsText(f); });
+        const taEl = bodyEl.querySelector('[data-testid="import-text"]');
+        if (taEl) taEl.value = String(text || String.fromCharCode());
       });
       const run = bodyEl.querySelector('[data-testid="import-run"]');
       const ta = bodyEl.querySelector('[data-testid="import-text"]');

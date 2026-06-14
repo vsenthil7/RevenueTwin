@@ -126,7 +126,8 @@ test('dashboardHTML renders hero stats, forecast, roi and leakage rows', () => {
   assert.ok(out.includes('£1,840.00'));
   assert.ok(out.includes('65%'));
   assert.ok(out.includes('intent uplift'));
-  assert.ok(out.includes('3×'));
+  assert.ok(out.includes('roi-calc'));
+  assert.ok(out.includes('roi-multiple'));
 });
 
 test('dashboardHTML tolerates missing sections (defaults to zeros)', () => {
@@ -463,4 +464,33 @@ test('mountLive: with existing cases, stays on triage (not first-run) (S69)', as
   const ctl = await app.mountLive(doc, { api, baseUrl: 'http://api', fetchImpl: fakeFetch(routes) });
   assert.equal(ctl.state.tab, 'triage');
   assert.ok(!ctl.state.firstRun);
+});
+
+test('mountLive: ROI calculator recalculates on new inputs (S71)', async () => {
+  const doc = dom();
+  let roiCall = null;
+  const routes = {
+    '/api/health': { ok: true },
+    '/api/cases': [{ id: 'c1', customerId: 'acme', status: 'open', findings: [] }],
+    '/api/headline': { totalRecoverableMajor: 2302, caseCount: 6, workIQShare: 0.1 },
+    '/api/insights': {},
+    '/api/leakage-by-type': [],
+    '/api/roi': { netAnnualValue: { amount: 9000000, currency: 'GBP' }, roiMultiple: 7, paybackMonths: 2, totalAnnualBenefit: { amount: 18000000, currency: 'GBP' } },
+  };
+  const baseFetch = fakeFetch(routes);
+  const capture = async (url, opts) => { if (typeof url === 'string' && url.includes('/api/roi') && opts && opts.body) roiCall = JSON.parse(opts.body); return baseFetch(url, opts); };
+  const api = { createClient, probe, mapCase };
+  const ctl = await app.mountLive(doc, { api, baseUrl: 'http://api', fetchImpl: capture });
+  (doc.querySelector('[data-testid="tab-dashboard"]')).click();
+  await new Promise((r) => setTimeout(r, 10));
+  const calc = doc.querySelector('[data-testid="roi-calc"]');
+  assert.ok(calc, 'roi calculator rendered');
+  const cost = doc.querySelector('[data-testid="roi-cost"]');
+  cost.value = '200000';
+  (doc.querySelector('[data-testid="roi-recalc"]')).click();
+  await new Promise((r) => setTimeout(r, 10));
+  assert.ok(roiCall, 'roi recompute called');
+  assert.equal(roiCall.annualPlatformCostMinor, 20000000, 'cost passed in minor units');
+  const payback = doc.querySelector('[data-testid="roi-payback"]');
+  assert.ok(payback.textContent.includes('2'));
 });

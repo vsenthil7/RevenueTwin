@@ -104,6 +104,29 @@ export function cfoCenterHTML(decisions) {
 }
 
 /** Dashboard: headline hero + forecast + benchmark + ROI + leakage-by-type. Pure, testable. */
+export function roiCalculatorHTML(roi, inputs) {
+  const r = roi || {};
+  const inp = inputs || { annualPlatformCostMinor: 15000000, analystHoursSavedPerMonth: 40, analystHourlyCostMinor: 7500 };
+  const fmtM = (m) => fmtGBP((m && m.amount) || 0);
+  const cost = (inp.annualPlatformCostMinor / 100).toLocaleString();
+  const hourly = (inp.analystHourlyCostMinor / 100).toLocaleString();
+  return '<div class="provenance" data-testid="roi-calc">'
+    + '<h3>ROI / payback calculator</h3>'
+    + '<p class="conf">Adjust your assumptions to see payback on your own numbers.</p>'
+    + '<div class="grid2">'
+    + '<label class="conf">Annual platform cost (GBP) <input data-testid="roi-cost" type="number" value="' + cost + '" style="width:100%"></label>'
+    + '<label class="conf">Analyst hours saved / month <input data-testid="roi-hours" type="number" value="' + inp.analystHoursSavedPerMonth + '" style="width:100%"></label>'
+    + '<label class="conf">Analyst hourly cost (GBP) <input data-testid="roi-hourly" type="number" value="' + hourly + '" style="width:100%"></label>'
+    + '</div>'
+    + '<p><button data-testid="roi-recalc" class="btn primary">Recalculate</button></p>'
+    + '<div class="grid2">'
+    + '<div class="stat"><div class="k">Net annual value</div><div class="v gold" data-testid="roi-net">' + fmtM(r.netAnnualValue) + '</div></div>'
+    + '<div class="stat"><div class="k">Return</div><div class="v" data-testid="roi-multiple">' + (r.roiMultiple || 0) + 'x</div></div>'
+    + '<div class="stat"><div class="k">Payback</div><div class="v" data-testid="roi-payback">' + (r.paybackMonths || 0) + ' months</div></div>'
+    + '<div class="stat"><div class="k">Total annual benefit</div><div class="v green">' + fmtM(r.totalAnnualBenefit) + '</div></div>'
+    + '</div></div>';
+}
+
 export function dashboardHTML(data) {
   const { headline, insights, leakageByType, roi } = data;
   const h = headline || {};
@@ -121,11 +144,7 @@ export function dashboardHTML(data) {
   const forecast = `<div class="stat" style="margin-bottom:16px"><div class="k">Projected recovery (forecast)</div>
       <div class="v green" data-testid="dash-projection">${fmt(proj)}</div>
       <div class="conf">peer benchmark: ${(bm.quartile || 'n/a')} quartile · maturity: ${ins.recoveryMaturity || 'n/a'}</div></div>`;
-  const roiBlock = roi ? `<div class="provenance" data-testid="dash-roi">
-      <h3>ROI</h3>
-      <div class="conf">Total annual benefit: <b>${fmt(roi.totalAnnualBenefit)}</b> · net: ${fmt(roi.netAnnualValue)}</div>
-      <div class="conf">Return: <b>${roi.roiMultiple}×</b> · payback: ${roi.paybackMonths} months</div>
-    </div>` : '';
+  const roiBlock = roi ? roiCalculatorHTML(roi, data.roiInputs) : '';
   const rows = (leakageByType || []).map((l) =>
     `<tr><td>${l.type.replace(/_/g, ' ')}</td><td>${l.cases}</td><td>${fmt(l.recoverable)}</td></tr>`).join('');
   const table = `<table data-testid="dash-leakage"><thead><tr><th>Type</th><th>Cases</th><th>Recoverable</th></tr></thead><tbody>${rows}</tbody></table>`;
@@ -343,6 +362,17 @@ export async function mountLive(doc, deps) {
     }
     if (state.tab === 'dashboard') {
       bodyEl.innerHTML = dashboardHTML(state.dash || {});
+      const recalc = bodyEl.querySelector('[data-testid="roi-recalc"]');
+      if (recalc) recalc.addEventListener('click', async () => {
+        const num = (sel, fallback) => { const el = bodyEl.querySelector(sel); const v = el ? parseFloat(String(el.value).replace(/[^0-9.]/g, '')) : NaN; return isNaN(v) ? fallback : v; };
+        const inputs = {
+          annualPlatformCostMinor: Math.round(num('[data-testid="roi-cost"]', 150000) * 100),
+          analystHoursSavedPerMonth: num('[data-testid="roi-hours"]', 40),
+          analystHourlyCostMinor: Math.round(num('[data-testid="roi-hourly"]', 75) * 100),
+        };
+        try { const roi = await client.roi(inputs); state.dash = { ...(state.dash || {}), roi, roiInputs: inputs }; } catch (e) { /* non-fatal */ }
+        render();
+      });
       return;
     }
     const c = activeCase();

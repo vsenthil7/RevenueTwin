@@ -146,6 +146,13 @@ export async function handleApi(
   if (method === 'GET' && path === '/api/import-template') {
     return { status: 200, body: { template: csvTemplate() } };
   }
+  if (method === 'GET' && path === '/api/import-runs') {
+    return { status: 200, body: { runs: await app.listImportRuns(principal) } };
+  }
+  if (method === 'GET' && path.startsWith('/api/import-runs/')) {
+    const id = decodeURIComponent(path.slice('/api/import-runs/'.length));
+    return { status: 200, body: await app.exportImportRun(principal, id) };
+  }
   if (method === 'GET' && path === '/api/portfolio') {
     return { status: 200, body: await app.portfolioSummary(principal) };
   }

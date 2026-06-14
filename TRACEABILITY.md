@@ -117,7 +117,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | P-01 | Real OIDC/Entra auth at the verifyToken seam (gate for real data) | S65 | OK (executed here): src/identity/oidc.ts, 15 tests 100%, live HTTP 200/403/403 |
 | P-02 | CSV field mapping + downloadable template | S66 | OK (executed here): src/import/mapping.ts 100%, POST /api/import mapping + GET /api/import-template, UI auto-map; 8 unit + 2 functional + 1 jsdom |
 | P-03 | File upload in import UI | S67 | OK (executed here): web/app.js file input + File.text() reader, 1 jsdom test |
-| P-04 | Persisted + exportable import runs | S68 | planned |
+| P-04 | Persisted + exportable import runs | S68 | OK (executed here): import.completed audit event, listImportRuns/exportImportRun, /api/import-runs routes, Past-imports UI; 601 backend + 31 frontend at 100% |
 | P-05 | Guided first-run onboarding | S69 | planned |
 | P-06 | Deployment hardening (secrets/OIDC/HTTPS) | S70 | planned |
 | P-07 | ROI/payback calculator UI | S71 | planned |

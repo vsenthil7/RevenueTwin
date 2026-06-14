@@ -178,6 +178,16 @@ export function suggestMappingFromCsv(csv) {
   return Object.keys(mapping).length > 0 ? mapping : undefined;
 }
 
+export function importRunsHTML(runs) {
+  const list = runs || [];
+  if (list.length === 0) return '<p class="conf">No past imports yet.</p>';
+  const rows = list.map(function (r) {
+    const amt = ((r.recoverableMinor || 0) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return '<tr><td>' + (r.at || '').slice(0, 10) + '</td><td>' + (r.customers || 0) + '</td><td>' + (r.currency || 'GBP') + ' ' + amt + '</td><td>' + (r.rowsAccepted || 0) + '/' + ((r.rowsAccepted || 0) + (r.rowsRejected || 0)) + '</td></tr>';
+  }).join('');
+  return '<h3>Past imports</h3><table data-testid="import-runs"><thead><tr><th>Date</th><th>Customers</th><th>Recoverable</th><th>Rows</th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
 export function importPanelHTML() {
   return '<h2>Import your billing data</h2>'
     + '<p class="conf">Paste CSV with columns: <b>customer, line_id, type, expected, actual, currency</b> (optional: confidence, age_days, contract_strength, field, name). We auto-map common header names like Invoice Amount or Account.</p>'
@@ -293,6 +303,10 @@ export async function mountLive(doc, deps) {
         return;
       }
       bodyEl.innerHTML = importPanelHTML();
+      const runsHost = doc.createElement('div');
+      runsHost.setAttribute('data-testid', 'import-runs-host');
+      bodyEl.appendChild(runsHost);
+      (async () => { try { const rr = await client.importRuns(); runsHost.innerHTML = importRunsHTML(rr.runs || []); } catch (e) { /* non-fatal */ } })();
       const tmpl = bodyEl.querySelector('[data-testid="import-template"]');
       if (tmpl) tmpl.addEventListener('click', async () => {
         try {

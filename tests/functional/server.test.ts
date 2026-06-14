@@ -289,3 +289,17 @@ test('GET /api/import-template: returns the canonical template CSV', async () =>
   assert.ok(body.template.includes('customer,line_id,type'));
   assert.ok(body.template.includes('Acme Corp'));
 });
+
+test('GET /api/import-runs + /api/import-runs/:id: list and export a run (S68)', async () => {
+  const d = await deps();
+  const csv = ['customer,line_id,type,expected,actual,currency', 'acme,INV-1,price_changed,12000,10800,GBP'].join('\n');
+  await handleApi(d, 'POST', '/api/import', Q(), { csv, at: '2026-04-02T00:00:00.000Z' }, fakeReq({ 'x-user-id': 'cfo' }, 'POST'));
+  const list = await handleApi(d, 'GET', '/api/import-runs', Q(), undefined, fakeReq({ 'x-user-id': 'cfo' }, 'GET'));
+  assert.equal(list.status, 200);
+  const runs = (list.body as { runs: Array<{ importId: string }> }).runs;
+  assert.equal(runs.length, 1);
+  const id = runs[0]!.importId;
+  const one = await handleApi(d, 'GET', '/api/import-runs/' + encodeURIComponent(id), Q(), undefined, fakeReq({ 'x-user-id': 'cfo' }, 'GET'));
+  assert.equal(one.status, 200);
+  assert.equal((one.body as { importId: string }).importId, id);
+});

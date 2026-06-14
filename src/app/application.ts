@@ -21,6 +21,17 @@ import { extractIntentEvent, type IntentExtractor, type IntentDocument } from '.
 import * as insights from './insights.ts';
 import { importCsv } from '../import/importer.ts';
 
+/** S68: a durable, revisitable summary of one import run (sourced from the audit log). */
+export interface ImportRunSummary {
+  readonly importId: string;
+  readonly at: string;
+  readonly customers: number;
+  readonly recoverableMinor: number;
+  readonly rowsAccepted: number;
+  readonly rowsRejected: number;
+  readonly currency: string;
+}
+
 export class AppError extends Error {
   constructor(message: string, readonly code: 'forbidden' | 'not_found' | 'bad_request' = 'bad_request') {
     super(message);
@@ -115,7 +126,33 @@ export class RevenueTwinApp {
       }
     });
     // Recompute totals over only the persisted (in-scope) cases.
+    const persistedRecoverable = persisted.reduce((acc, c) => acc + c.findings.reduce((s, fnd) => s + fnd.netRecoverable.amount, 0), 0);
+    // S68: record a durable, revisitable import-run summary in the audit log.
+    const importId = 'import-' + now.replace(/[^0-9]/g, '').slice(0, 14);
+    await this.record('import-agent', 'import.completed', importId, {
+      importId, at: now, customers: persisted.length, recoverableMinor: persistedRecoverable,
+      rowsAccepted: result.rowsAccepted, rowsRejected: skipped.length, currency: result.currency,
+    });
     return { ...result, cases: persisted, rowsRejected: skipped.length, rejects: skipped };
+  }
+
+  /** S68: list past import runs (durable, from the audit log), newest first. */
+  async listImportRuns(principal: AuthenticatedPrincipal): Promise<ImportRunSummary[]> {
+    requirePerm(principal, 'case:read');
+    const entries = await this.uow.audit.all();
+    const runs = entries
+      .filter((e) => e.event === 'import.completed')
+      .map((e) => e.detail as unknown as ImportRunSummary);
+    return runs.slice().reverse();
+  }
+
+  /** S68: export a single import run summary by id (durable, revisitable). */
+  async exportImportRun(principal: AuthenticatedPrincipal, importId: string): Promise<ImportRunSummary> {
+    requirePerm(principal, 'case:read');
+    const runs = await this.listImportRuns(principal);
+    const run = runs.find((r) => r.importId === importId);
+    if (!run) throw new AppError('Import run ' + importId + ' not found', 'not_found');
+    return run;
   }
 
   async getCase(principal: AuthenticatedPrincipal, caseId: string): Promise<LeakageCase> {

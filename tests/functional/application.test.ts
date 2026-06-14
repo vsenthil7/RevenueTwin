@@ -302,3 +302,34 @@ test('importCsvCases: out-of-scope customers are skipped, in-scope persisted', a
   assert.equal(r.cases[0]!.customerId, 'northwind');
   assert.ok(r.rejects.some((x) => x.reason.includes('out of scope')));
 });
+
+test('listImportRuns + exportImportRun: an import is a durable, revisitable run (S68)', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  const csv = [IMPORT_HEADER, 'acme,INV-1,price_changed,12000,10800,GBP,0.95,45,Q1'].join('\n');
+  const r = await app.importCsvCases(cfo, csv, '2026-04-02T00:00:00.000Z');
+  const runs = await app.listImportRuns(cfo);
+  assert.equal(runs.length, 1);
+  assert.equal(runs[0]!.customers, 1);
+  assert.ok(runs[0]!.recoverableMinor > 0);
+  assert.equal(runs[0]!.rowsAccepted, r.rowsAccepted);
+  // export the run by id
+  const exported = await app.exportImportRun(cfo, runs[0]!.importId);
+  assert.equal(exported.importId, runs[0]!.importId);
+});
+
+test('listImportRuns: returns runs newest-first across multiple imports (S68)', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  await app.importCsvCases(cfo, [IMPORT_HEADER, 'acme,INV-1,price_changed,12000,10800,GBP,0.9,45,A'].join('\n'), '2026-04-02T00:00:00.000Z');
+  await app.importCsvCases(cfo, [IMPORT_HEADER, 'globex,INV-2,unbilled_usage,5000,0,GBP,0.9,20,B'].join('\n'), '2026-05-02T00:00:00.000Z');
+  const runs = await app.listImportRuns(cfo);
+  assert.equal(runs.length, 2);
+  assert.ok(runs[0]!.at > runs[1]!.at, 'newest first');
+});
+
+test('exportImportRun: unknown id throws not_found (S68)', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  await assert.rejects(() => app.exportImportRun(cfo, 'import-nope'), /not found/);
+});

@@ -60,6 +60,7 @@ export function createClient(baseUrl, userId, fetchImpl) {
     decide: (caseId, decision) => post('/api/cases/' + encodeURIComponent(caseId) + '/decision', { decision }),
     importCsv: (csv, mapping) => post('/api/import', mapping ? { csv, mapping } : { csv }),
     importTemplate: () => get('/api/import-template'),
+    importRuns: () => get('/api/import-runs'),
 
   };
 }

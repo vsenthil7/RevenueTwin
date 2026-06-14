@@ -427,3 +427,20 @@ test('mountLive: Import tab file upload fills the textarea (S67)', async () => {
   const fn = doc.querySelector('[data-testid="import-filename"]');
   assert.equal(fn.textContent, 'billing.csv');
 });
+
+test('mountLive: Import tab shows past import runs (S68)', async () => {
+  const doc = dom();
+  const routes = {
+    '/api/health': { ok: true },
+    '/api/cases': [],
+    '/api/import-runs': { runs: [{ importId: 'import-20260402', at: '2026-04-02T00:00:00.000Z', customers: 2, recoverableMinor: 120000, rowsAccepted: 3, rowsRejected: 1, currency: 'GBP' }] },
+  };
+  const api = { createClient, probe, mapCase };
+  await app.mountLive(doc, { api, baseUrl: 'http://api', fetchImpl: fakeFetch(routes) });
+  (doc.querySelector('[data-testid="tab-import"]')).click();
+  await new Promise((r) => setTimeout(r, 20));
+  const tbl = doc.querySelector('[data-testid="import-runs"]');
+  assert.ok(tbl, 'past imports table rendered');
+  assert.ok(tbl.textContent.includes('1,200.00'), 'shows recoverable amount');
+  assert.ok(tbl.textContent.includes('2026-04-02'), 'shows run date');
+});

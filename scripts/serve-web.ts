@@ -33,8 +33,29 @@ if (databaseUrl && databaseUrl.length > 0) {
   console.log('RevenueTwin persistence: in-memory (set DATABASE_URL for durable storage)');
 }
 
+// Authentication is selected by environment: if OIDC_ISSUER/OIDC_AUDIENCE/OIDC_JWKS_URI are set
+// we wire the real OIDC/Entra verifier (RS256 + JWKS); otherwise the x-user-id demo shim is used.
+let verifier: import('../src/identity/auth.ts').TokenVerifier | undefined;
+const oidcIssuer = process.env.OIDC_ISSUER;
+const oidcAudience = process.env.OIDC_AUDIENCE;
+const oidcJwksUri = process.env.OIDC_JWKS_URI;
+if (oidcIssuer && oidcAudience && oidcJwksUri) {
+  const { OidcTokenVerifier } = await import('../src/identity/oidc.ts');
+  const fetchJwks = async (uri: string) => {
+    const r = await fetch(uri);
+    if (!r.ok) throw new Error('JWKS fetch failed: ' + r.status);
+    return (await r.json()) as { keys: import('../src/identity/oidc.ts').Jwk[] };
+  };
+  verifier = new OidcTokenVerifier({ issuer: oidcIssuer, audience: oidcAudience, jwksUri: oidcJwksUri }, fetchJwks);
+  // eslint-disable-next-line no-console
+  console.log('RevenueTwin auth: OIDC (issuer=' + oidcIssuer + ')');
+} else {
+  // eslint-disable-next-line no-console
+  console.log('RevenueTwin auth: x-user-id demo shim (set OIDC_ISSUER/OIDC_AUDIENCE/OIDC_JWKS_URI for real auth)');
+}
+
 const { app, users, backend } = await bootstrap(bootOpts);
-const server = createApiServer({ app, users, webRoot });
+const server = createApiServer({ app, users, webRoot, verifier });
 server.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log('RevenueTwin serving on http://127.0.0.1:' + port + ' (backend: ' + backend + ')');

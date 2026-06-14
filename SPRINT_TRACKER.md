@@ -472,7 +472,7 @@ breakdown — the depth is visible, not buried in libraries. S0–S46 complete.
 
 | Sprint | Title | Scope | Status | Tests |
 | --- | --- | --- | --- | --- |
-| S65 | Real auth (OIDC/Entra) | Replace x-user-id shim with real bearer-token validation at the S60 verifyToken seam; JWKS/claims verifier, config-driven, fail-closed. Gate for all real-data work. | 🟡 planned | TBD |
+| S65 | Real auth (OIDC/Entra) | `src/identity/oidc.ts` OidcTokenVerifier: real RS256 JWT verification against a cached JWKS (Node crypto only, JwksFetcher injected so offline-testable), with iss/aud/exp/nbf/sub checks and key-rotation refresh. Wired into `scripts/serve-web.ts`: OIDC_ISSUER/OIDC_AUDIENCE/OIDC_JWKS_URI env -> real verifier (HTTPS JWKS fetch); else x-user-id shim. Server already had the verifier slot (S60). Live-verified over HTTP: valid RS256 bearer -> 200, bad token -> 403, no token -> 403. | ✅ executed here | 15 (oidc) |
 | S66 | CSV field mapping + template | Downloadable template + column-mapping so a real CFO export imports without renaming columns. | 🟡 planned | TBD |
 | S67 | File upload | Real file upload in the import UI (input type=file -> read -> import). | 🟡 planned | TBD |
 | S68 | Persisted + exportable import runs | Named, saved, revisitable import run + exportable board/audit pack (via evidence module). | 🟡 planned | TBD |

@@ -36,8 +36,11 @@ precisely what executed here versus what is written and runs in CI, so nothing i
   the web control room hydrates from the live API.
 
 ## Deliberate scope boundaries
-- **Authentication** is delegated to the enterprise IdP; this codebase models authorization. The
-  `x-user-id` header in `src/app/server.ts` is a demo shim, not a production auth mechanism.
+- **Authentication** (S65, RESOLVED): real OIDC/Entra is wired. `src/identity/oidc.ts` does RS256
+  JWT verification against a JWKS with iss/aud/exp/nbf checks; `scripts/serve-web.ts` enables it when
+  OIDC_ISSUER/OIDC_AUDIENCE/OIDC_JWKS_URI are set. The `x-user-id` header remains as a fallback
+  ONLY when no verifier is configured (local/demo). For production, set the OIDC env vars; live-
+  verified: valid bearer -> 200, bad/no token -> 403.
 - **Production audit store** (WORM/retention) is a deployment concern; the chain logic and verify
   path are complete and tested.
 - **Work IQ extraction quality** depends on upstream M365 signals; the system mitigates *misuse*

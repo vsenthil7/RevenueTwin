@@ -114,7 +114,7 @@ could not compile until their imports existed; Block R wires and tests them.
 
 | Req ID | Requirement | Sprint | Status |
 | --- | --- | --- | --- |
-| P-01 | Real OIDC/Entra auth at the verifyToken seam (gate for real data) | S65 | planned |
+| P-01 | Real OIDC/Entra auth at the verifyToken seam (gate for real data) | S65 | OK (executed here): src/identity/oidc.ts, 15 tests 100%, live HTTP 200/403/403 |
 | P-02 | CSV field mapping + downloadable template | S66 | planned |
 | P-03 | File upload in import UI | S67 | planned |
 | P-04 | Persisted + exportable import runs | S68 | planned |

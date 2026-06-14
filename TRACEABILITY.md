@@ -126,3 +126,9 @@ could not compile until their imports existed; Block R wires and tests them.
 | P-10 | Multi-currency import + consolidation | S74 | planned |
 | P-11 | Connector import (Stripe/URL/SFTP) | S75 | planned |
 | P-12 | Multi-user pilot accounts + tenant isolation UI | S76 | planned |
+| P-13 | Recovery workflow + dunning export | S77 | planned |
+| P-14 | Slack/Teams + email alert delivery | S78 | planned |
+| P-15 | Benchmark + peer percentile dashboard | S79 | planned |
+| P-16 | What-if / scenario modelling | S80 | planned |
+| P-17 | Audit-pack PDF + board deck export | S81 | planned |
+| P-18 | API keys + programmatic ingestion | S82 | planned |

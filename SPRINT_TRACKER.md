@@ -484,6 +484,12 @@ breakdown — the depth is visible, not buried in libraries. S0–S46 complete.
 | S74 | Multi-currency import + consolidation | Lift one-currency guard; consolidate to reporting currency (consolidation module). | 🟡 planned | TBD |
 | S75 | Connector import (Stripe/URL/SFTP) | Pull invoices directly via the connectors framework; zero-manual time-to-value. | 🟡 planned | TBD |
 | S76 | Multi-user pilot accounts | Self-serve user/role admin on RBAC + tenancy; per-tenant isolation UI. | 🟡 planned | TBD |
+| S77 | Recovery workflow + dunning export | Generate the recovery action (credit memo / rebill / dunning draft) for an approved case, exportable to billing. Closes detection->cash. | planned | TBD |
+| S78 | Slack/Teams + email alerts | Wire S73 rescan alerts to real channels via the webhooks module. | planned | TBD |
+| S79 | Benchmark + peer percentile dashboard | Surface the benchmarking engine: leakage rate vs peer quartiles. | planned | TBD |
+| S80 | What-if / scenario modelling | Model pricing/escalator change impact vs the actual portfolio (forecasting engine). | planned | TBD |
+| S81 | Audit-pack PDF + board deck export | One-click signed evidence pack + board deck from any run/period. | planned | TBD |
+| S82 | API keys + programmatic ingestion | Push data continuously via API key; becomes part of the close process. | planned | TBD |
 
 ### Sprint block R — exit criteria
 - `make ci-local` green here: `tsc` clean, **100%/100%/100%/100%** backend coverage, jsdom green, offline demo green.

@@ -58,6 +58,8 @@ export function createClient(baseUrl, userId, fetchImpl) {
     leakageByType: () => get('/api/leakage-by-type'),
     roi: (inputs) => post('/api/roi', inputs),
     decide: (caseId, decision) => post('/api/cases/' + encodeURIComponent(caseId) + '/decision', { decision }),
+    importCsv: (csv) => post('/api/import', { csv }),
+
   };
 }
 

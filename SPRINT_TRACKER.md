@@ -465,6 +465,8 @@ breakdown — the depth is visible, not buried in libraries. S0–S46 complete.
 
 | S63 | Buyer data import (CSV) | `src/import/csv.ts` (dependency-free RFC-4180 CSV parser: quoted fields, embedded commas, escaped quotes, CRLF, header-keyed records with duplicate/empty-header guards) + `src/import/importer.ts` (importCsv: maps a buyer's own expected-vs-actual billing lines -> VarianceInput -> the SAME deterministic reconciliation engine -> real LeakageCases grouped per customer; row-scoped rejects, sub-materiality/time-barred yield no finding, one-currency-per-import guard, recoverable total + per-case summary). Wired into `RevenueTwinApp.importCsvCases` (case:triage gated, scope-checked, audited as case.imported) + `POST /api/import`. This is the feature that lets a CFO see THEIR recoverable revenue, not the seeded demo. Verified over real HTTP: a 5-row CSV returned GBP 6,763.93 across 3 customers, malformed row rejected, unauth POST 403. | ✅ executed here | 29 |
 
+| S64 | CSV import UI (upload box) | `web/app.js` `importResultHTML(result)` (pure, testable: renders recoverable total + per-customer summary + rejects) + `web/api.js` `importCsv(csv)` client method (POST /api/import) + upload control wired into the control room (textarea/file -> import -> render result) | ✅ executed here | 28 jsdom (1 new import-flow E2E) |
+
 ### Sprint block R — exit criteria
 - `make ci-local` green here: `tsc` clean, **100%/100%/100%/100%** backend coverage, jsdom green, offline demo green.
 - Playwright + Flutter jobs valid and green in GitHub Actions CI.

@@ -132,6 +132,34 @@ export function dashboardHTML(data) {
   return `<h2>CFO Dashboard</h2>${heroes}${forecast}${roiBlock}<div class="cfo"><h2>Leakage by type</h2>${table}</div>`;
 }
 
+
+export function importResultHTML(result) {
+  const r = result || {};
+  const total = r.totalRecoverableFormatted || "GBP 0.00";
+  const summaries = r.summaries || [];
+  const rejects = r.rejects || [];
+  const rowsHtml = summaries.map(function (s) {
+    return "<tr><td>" + s.customerId + "</td><td>" + s.findingCount + "</td><td>" + s.netRecoverableFormatted + "</td></tr>";
+  }).join("");
+  const rejHtml = rejects.map(function (x) {
+    return "<li>row " + x.row + ": " + x.reason + "</li>";
+  }).join("");
+  let html = "<h2>Import result</h2>";
+  html += '<div class="stat" data-testid="import-total"><div class="k">Recoverable found in your data</div><div class="v gold">' + total + "</div></div>";
+  html += '<div class="conf" data-testid="import-counts">accepted ' + (r.rowsAccepted || 0) + " / rejected " + (r.rowsRejected || 0) + "</div>";
+  html += '<table data-testid="import-summary"><thead><tr><th>Customer</th><th>Findings</th><th>Recoverable</th></tr></thead><tbody>' + rowsHtml + "</tbody></table>";
+  if (rejHtml) html += '<div class="conf"><b>Rejected rows</b><ul data-testid="import-rejects">' + rejHtml + "</ul></div>";
+  return html;
+}
+
+
+export function importPanelHTML() {
+  return '<h2>Import your billing data</h2>'
+    + '<p class="conf">Paste CSV with columns: <b>customer, line_id, type, expected, actual, currency</b> (optional: confidence, age_days, contract_strength, field, name). The engine finds your recoverable revenue.</p>'
+    + '<textarea data-testid="import-text" rows="10" style="width:100%;font-family:monospace;font-size:13px" placeholder="customer,line_id,type,expected,actual,currency&#10;Acme,INV-1,price_changed,12000,10800,GBP"></textarea>'
+    + '<p><button data-testid="import-run" class="btn primary">Find my recoverable revenue</button></p>';
+}
+
 // ---- DOM wiring (only runs in a browser/jsdom with document present) ----
 export function mount(doc) {
   const state = { workIQ: true, activeId: null, decisions: {} };
@@ -199,11 +227,12 @@ export async function mountLive(doc, deps) {
   if (modeEl) modeEl.textContent = '● LIVE (API)';
 
   const client = createClient(baseUrl, userId, deps.fetchImpl);
-  const state = { activeId: null, cases: [], decisions: {}, tab: 'triage', dash: null };
+  const state = { activeId: null, cases: [], decisions: {}, tab: 'triage', dash: null, importResult: null };
   const listEl = doc.querySelector('[data-testid="case-list"]');
   const bodyEl = doc.querySelector('[data-testid="inspector-body"]') || doc.querySelector('[data-testid="inspector"]');
   const tabTriage = doc.querySelector('[data-testid="tab-triage"]');
   const tabDash = doc.querySelector('[data-testid="tab-dashboard"]');
+  const tabImport = doc.querySelector('[data-testid="tab-import"]');
 
   async function load() {
     const backendCases = await client.cases();
@@ -213,6 +242,7 @@ export async function mountLive(doc, deps) {
       else if (c.status === 'rejected') state.decisions[c.id] = 'rejected';
     }
   }
+  async function reloadIfPossible() { try { await load(); } catch (e) { /* non-fatal */ } }
   async function loadDashboard() {
     const [headline, insights, leakageByType, roi] = await Promise.all([
       client.headline(), client.insights(), client.leakageByType(),
@@ -228,6 +258,26 @@ export async function mountLive(doc, deps) {
     });
   }
   function renderBody() {
+    if (state.tab === 'import') {
+      if (state.importResult) {
+        bodyEl.innerHTML = importResultHTML(state.importResult) + '<p><button data-testid="import-again" class="btn">Import another file</button></p>';
+        const again = bodyEl.querySelector('[data-testid="import-again"]');
+        if (again) again.addEventListener('click', () => { state.importResult = null; render(); });
+        return;
+      }
+      bodyEl.innerHTML = importPanelHTML();
+      const run = bodyEl.querySelector('[data-testid="import-run"]');
+      const ta = bodyEl.querySelector('[data-testid="import-text"]');
+      if (run && ta) run.addEventListener('click', async () => {
+        const csv = ta.value || '';
+        if (!csv.trim()) return;
+        try { state.importResult = await client.importCsv(csv); }
+        catch (e) { state.importResult = { totalRecoverableFormatted: 'import failed', summaries: [], rejects: [{ row: 0, reason: String(e && e.message || e) }] }; }
+        await reloadIfPossible();
+        render();
+      });
+      return;
+    }
     if (state.tab === 'dashboard') {
       bodyEl.innerHTML = dashboardHTML(state.dash || {});
       return;
@@ -239,10 +289,12 @@ export async function mountLive(doc, deps) {
     if (approve) approve.addEventListener('click', async () => { await client.decide(state.activeId, 'approve'); state.decisions[state.activeId] = 'approved'; render(); });
     if (reject) reject.addEventListener('click', async () => { await client.decide(state.activeId, 'reject'); state.decisions[state.activeId] = 'rejected'; render(); });
   }
+
   function render() { renderQueue(); renderBody(); }
 
   if (tabTriage) tabTriage.addEventListener('click', () => { state.tab = 'triage'; render(); });
   if (tabDash) tabDash.addEventListener('click', async () => { state.tab = 'dashboard'; if (!state.dash) await loadDashboard(); render(); });
+  if (tabImport) tabImport.addEventListener('click', () => { state.tab = 'import'; render(); });
 
   await load();
   render();

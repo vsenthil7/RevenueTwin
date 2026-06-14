@@ -88,6 +88,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | A-04 | Insights service (ROI, benchmark, anomalies) | `src/app/insights.ts` | S46->S57 | `tests/functional/application.test.ts` (insights flows, 100%) | OK |
 | A-05 | Buyer CSV import -> real recoverable revenue (parser) | `src/import/csv.ts` | S63 | `tests/unit/csv.test.ts` (9) | OK (executed here) |
 | A-06 | CSV -> reconciliation engine -> cases (import engine + `POST /api/import`, case:triage gated, scope-checked, audited) | `src/import/importer.ts`, `src/app/application.ts`, `src/app/server.ts` | S63 | `tests/unit/importer.test.ts` (14) + live HTTP probe (GBP 6,763.93, 403 unauth) | OK (executed here) |
+| A-07 | CSV import UI (Import tab -> upload panel -> renders recoverable result + rejects) | `web/app.js` (importPanelHTML, importResultHTML, mountLive wiring), `web/api.js` (importCsv), `web/index.html` (tab-import) | S64 | `tests/e2e/web.jsdom.test.ts` (Import tab E2E) | OK (executed here) |
 
 ## 6. Front end
 

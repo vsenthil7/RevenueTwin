@@ -350,3 +350,32 @@ test('mountLive exposes reload() and renders dashboard with no data loaded yet',
   await ctrl.reload();
   assert.equal(ctrl.state.cases.length, 1);
 });
+
+test('mountLive: Import tab -> upload CSV -> renders recoverable result', async () => {
+  const doc = dom();
+  const routes = {
+    '/api/health': { ok: true },
+    '/api/cases': [],
+    '/api/import': { totalRecoverableFormatted: 'GBP 6,763.93', rowsAccepted: 4, rowsRejected: 1, summaries: [{ customerId: 'Globex', findingCount: 1, netRecoverableFormatted: 'GBP 4,954.34' }], rejects: [{ row: 6, reason: 'invalid type' }] },
+  };
+  const api = { createClient, probe, mapCase };
+  await app.mountLive(doc, { api, baseUrl: 'http://api', fetchImpl: fakeFetch(routes) as any });
+  // click the Import tab
+  const tab = doc.querySelector('[data-testid="tab-import"]') as HTMLElement;
+  assert.ok(tab, 'import tab exists');
+  tab.click();
+  // fill the textarea and run
+  const ta = doc.querySelector('[data-testid="import-text"]') as HTMLTextAreaElement;
+  assert.ok(ta, 'import textarea rendered');
+  ta.value = 'customer,line_id,type,expected,actual,currency\nGlobex,INV-1,unbilled_usage,5000,0,GBP';
+  const run = doc.querySelector('[data-testid="import-run"]') as HTMLElement;
+  assert.ok(run, 'run button rendered');
+  run.click();
+  // allow the async click handler to resolve
+  await new Promise((r) => setTimeout(r, 10));
+  const total = doc.querySelector('[data-testid="import-total"]');
+  assert.ok(total, 'import result total rendered');
+  assert.ok(total!.textContent!.includes('6,763.93'));
+  const summary = doc.querySelector('[data-testid="import-summary"]');
+  assert.ok(summary!.textContent!.includes('Globex'));
+});

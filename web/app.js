@@ -302,7 +302,8 @@ export async function mountLive(doc, deps) {
         if (again) again.addEventListener('click', () => { state.importResult = null; render(); });
         return;
       }
-      bodyEl.innerHTML = importPanelHTML();
+      const welcome = state.firstRun ? '<div data-testid="onboarding" class="recall"><b>Welcome.</b> Upload your billing data below to see your recoverable revenue in under 2 minutes. Nothing here is shared.</div>' : '';
+      bodyEl.innerHTML = welcome + importPanelHTML();
       const runsHost = doc.createElement('div');
       runsHost.setAttribute('data-testid', 'import-runs-host');
       bodyEl.appendChild(runsHost);
@@ -359,6 +360,9 @@ export async function mountLive(doc, deps) {
   if (tabImport) tabImport.addEventListener('click', () => { state.tab = 'import'; render(); });
 
   await load();
+  // S69: first-run onboarding - an empty case queue means no data imported yet, so route
+  // the user straight to import-your-own-data instead of showing an empty triage queue.
+  if (state.cases.length === 0) { state.tab = 'import'; state.firstRun = true; }
   render();
   return { state, render, loadDashboard, reload: async () => { await load(); render(); } };
 }

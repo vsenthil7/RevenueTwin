@@ -444,3 +444,23 @@ test('mountLive: Import tab shows past import runs (S68)', async () => {
   assert.ok(tbl.textContent.includes('1,200.00'), 'shows recoverable amount');
   assert.ok(tbl.textContent.includes('2026-04-02'), 'shows run date');
 });
+
+test('mountLive: first-run (no cases) routes to Import tab with onboarding banner (S69)', async () => {
+  const doc = dom();
+  const routes = { '/api/health': { ok: true }, '/api/cases': [], '/api/import-runs': { runs: [] } };
+  const api = { createClient, probe, mapCase };
+  const ctl = await app.mountLive(doc, { api, baseUrl: 'http://api', fetchImpl: fakeFetch(routes) });
+  assert.equal(ctl.state.tab, 'import', 'first run lands on import');
+  const onb = doc.querySelector('[data-testid="onboarding"]');
+  assert.ok(onb, 'onboarding banner shown');
+  assert.ok(onb.textContent.includes('2 minutes'));
+});
+
+test('mountLive: with existing cases, stays on triage (not first-run) (S69)', async () => {
+  const doc = dom();
+  const routes = { '/api/health': { ok: true }, '/api/cases': [{ id: 'c1', customerId: 'acme', status: 'open', findings: [] }] };
+  const api = { createClient, probe, mapCase };
+  const ctl = await app.mountLive(doc, { api, baseUrl: 'http://api', fetchImpl: fakeFetch(routes) });
+  assert.equal(ctl.state.tab, 'triage');
+  assert.ok(!ctl.state.firstRun);
+});

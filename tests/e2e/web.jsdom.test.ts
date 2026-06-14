@@ -494,3 +494,18 @@ test('mountLive: ROI calculator recalculates on new inputs (S71)', async () => {
   const payback = doc.querySelector('[data-testid="roi-payback"]');
   assert.ok(payback.textContent.includes('2'));
 });
+
+test('provenanceBreakdownHTML: shows expected/actual/gross/decay/net derivation (S72)', () => {
+  const c = mapCase({ id: 'c1', customerId: 'acme', status: 'open', findings: [{ type: 'price_changed', name: 'Q1 license', expected: { amount: 1200000 }, actual: { amount: 1080000 }, grossDetected: { amount: 120000 }, netRecoverable: { amount: 114000 }, confidence: 0.95 }] });
+  const html = app.provenanceBreakdownHTML(c);
+  assert.ok(html.includes('explain-number'));
+  assert.ok(html.includes('Q1 license'));
+  assert.ok(html.includes('95%'));
+  // decay = gross 1200.00 - net 1140.00 = 60.00
+  assert.ok(html.includes('60.00'));
+});
+
+test('provenanceBreakdownHTML: empty for a case with no findings (S72)', () => {
+  assert.equal(app.provenanceBreakdownHTML({ findings: [] }), '');
+  assert.equal(app.provenanceBreakdownHTML({}), '');
+});

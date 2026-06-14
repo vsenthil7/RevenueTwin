@@ -121,7 +121,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | P-05 | Guided first-run onboarding | S69 | OK (executed here): first-run routing to import + onboarding banner; 2 jsdom tests |
 | P-06 | Deployment hardening (secrets/OIDC/HTTPS) | S70 | OK (executed here): compose env-secrets + OIDC + healthcheck, .env.example, deploy.sh health-gate, HTTPS proxy docs; validated via docker compose config |
 | P-07 | ROI/payback calculator UI | S71 | OK (executed here): roiCalculatorHTML interactive panel + recalc via /api/roi; 1 jsdom test |
-| P-08 | Explain-the-number provenance panel | S72 | planned |
+| P-08 | Explain-the-number provenance panel | S72 | OK (executed here): mapCase findings breakdown + provenanceBreakdownHTML derivation table; 2 jsdom tests |
 | P-09 | Scheduled re-scan + diff alerts | S73 | planned |
 | P-10 | Multi-currency import + consolidation | S74 | planned |
 | P-11 | Connector import (Stripe/URL/SFTP) | S75 | planned |

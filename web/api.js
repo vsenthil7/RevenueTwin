@@ -25,6 +25,21 @@ export function mapCase(backendCase) {
       whyIntent: 'Detected from unstructured commercial signal; no billing line followed.',
     };
   }
+  // S72: per-finding provenance breakdown (expected vs actual vs gross vs net = decay applied).
+  mapped.findings = (backendCase.findings || []).map(function (f) {
+    const g = (f.grossDetected && f.grossDetected.amount) || 0;
+    const nt = (f.netRecoverable && f.netRecoverable.amount) || 0;
+    return {
+      name: f.name || f.field || f.type || 'finding',
+      type: f.type,
+      expectedMinor: (f.expected && f.expected.amount) != null ? f.expected.amount : null,
+      actualMinor: (f.actual && f.actual.amount) != null ? f.actual.amount : null,
+      grossMinor: g,
+      netMinor: nt,
+      decayMinor: g - nt,
+      confidence: f.confidence != null ? f.confidence : null,
+    };
+  });
   return mapped;
 }
 

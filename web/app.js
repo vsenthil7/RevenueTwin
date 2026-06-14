@@ -59,6 +59,20 @@ export function recallBarHTML(workIQEnabled) {
     <div class="recall-box on"><div class="conf">Work IQ ON</div><div class="pct" data-testid="recall-on">${(r.on * 100).toFixed(0)}%</div></div>`;
 }
 
+export function provenanceBreakdownHTML(c) {
+  const findings = (c && c.findings) || [];
+  if (findings.length === 0) return '';
+  const cell = (m) => m == null ? '-' : fmtGBP(m);
+  const rows = findings.map(function (f) {
+    const conf = f.confidence == null ? '-' : Math.round(f.confidence * 100) + '%';
+    return '<tr><td>' + (f.name || f.type || '') + '</td><td>' + cell(f.expectedMinor) + '</td><td>' + cell(f.actualMinor) + '</td><td>' + cell(f.grossMinor) + '</td><td>' + cell(f.decayMinor) + '</td><td class="gold">' + cell(f.netMinor) + '</td><td>' + conf + '</td></tr>';
+  }).join('');
+  return '<div class="provenance" data-testid="explain-number">'
+    + '<h3>Explain the number</h3>'
+    + '<p class="conf">Every recoverable figure is derived deterministically: expected minus actual gives the gross variance, then the legal/temporal decay model yields the defensible net. No black box.</p>'
+    + '<table data-testid="explain-table"><thead><tr><th>Finding</th><th>Expected</th><th>Actual</th><th>Gross</th><th>Decay</th><th>Net</th><th>Conf</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+}
+
 export function inspectorHTML(c, decision) {
   if (!c) {
     return `<h2>Case Inspector</h2><p class="empty-state" data-testid="empty-state">Select a case from the queue to inspect evidence and decide.</p>`;
@@ -85,6 +99,7 @@ export function inspectorHTML(c, decision) {
       <div class="stat"><div class="k">Net recoverable</div><div class="v gold" data-testid="net-recoverable">${fmtGBP(c.netRecoverable)}</div></div>
     </div>
     ${prov}
+    ${provenanceBreakdownHTML(c)}
     ${actions}
     ${banner}`;
 }

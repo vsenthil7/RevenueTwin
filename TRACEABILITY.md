@@ -109,3 +109,20 @@ could not compile until their imports existed; Block R wires and tests them.
 | T-05 | Playwright web E2E green in CI | S61 | CI-only (`tests/playwright/control-room.spec.ts`; needs browser binary, blocked offline) |
 | T-06 | Flutter mobile tests green in CI | S62 | CI-only (mobile-flutter job: flutter analyze + test; no Dart SDK offline) |
 | T-07 | `make ci-local` green here (tsc + 100% + jsdom + offline demo) | S62 | ⬜ |
+
+## Planned requirements (S65+, see PRODUCT_ROADMAP.md)
+
+| Req ID | Requirement | Sprint | Status |
+| --- | --- | --- | --- |
+| P-01 | Real OIDC/Entra auth at the verifyToken seam (gate for real data) | S65 | planned |
+| P-02 | CSV field mapping + downloadable template | S66 | planned |
+| P-03 | File upload in import UI | S67 | planned |
+| P-04 | Persisted + exportable import runs | S68 | planned |
+| P-05 | Guided first-run onboarding | S69 | planned |
+| P-06 | Deployment hardening (secrets/OIDC/HTTPS) | S70 | planned |
+| P-07 | ROI/payback calculator UI | S71 | planned |
+| P-08 | Explain-the-number provenance panel | S72 | planned |
+| P-09 | Scheduled re-scan + diff alerts | S73 | planned |
+| P-10 | Multi-currency import + consolidation | S74 | planned |
+| P-11 | Connector import (Stripe/URL/SFTP) | S75 | planned |
+| P-12 | Multi-user pilot accounts + tenant isolation UI | S76 | planned |

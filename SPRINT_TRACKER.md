@@ -467,6 +467,24 @@ breakdown — the depth is visible, not buried in libraries. S0–S46 complete.
 
 | S64 | CSV import UI (upload box) | `web/app.js` `importResultHTML(result)` (pure, testable: renders recoverable total + per-customer summary + rejects) + `web/api.js` `importCsv(csv)` client method (POST /api/import) + upload control wired into the control room (textarea/file -> import -> render result) | ✅ executed here | 28 jsdom (1 new import-flow E2E) |
 
+
+### Planned - Block S (sellability) + Block T (differentiation). See PRODUCT_ROADMAP.md.
+
+| Sprint | Title | Scope | Status | Tests |
+| --- | --- | --- | --- | --- |
+| S65 | Real auth (OIDC/Entra) | Replace x-user-id shim with real bearer-token validation at the S60 verifyToken seam; JWKS/claims verifier, config-driven, fail-closed. Gate for all real-data work. | 🟡 planned | TBD |
+| S66 | CSV field mapping + template | Downloadable template + column-mapping so a real CFO export imports without renaming columns. | 🟡 planned | TBD |
+| S67 | File upload | Real file upload in the import UI (input type=file -> read -> import). | 🟡 planned | TBD |
+| S68 | Persisted + exportable import runs | Named, saved, revisitable import run + exportable board/audit pack (via evidence module). | 🟡 planned | TBD |
+| S69 | Guided first-run onboarding | New user routed straight to upload-your-own-data, not demo-data triage. | 🟡 planned | TBD |
+| S70 | Deployment hardening | Secrets (no changeme), OIDC config in compose, race-free deploy.sh with health wait-loop, HTTPS notes. | 🟡 planned | TBD |
+| S71 | ROI/payback calculator UI | Visible board-ready ROI widget: recovered vs cost, payback, run-rate. | 🟡 planned | TBD |
+| S72 | Explain-the-number provenance panel | Full derivation per figure: expected vs actual, decay, Work IQ span, audit entry. Anti-black-box. | 🟡 planned | TBD |
+| S73 | Scheduled re-scan + diff alerts | Recurring recon (scheduler); alert on new leakage since last run. Standing watchdog. | 🟡 planned | TBD |
+| S74 | Multi-currency import + consolidation | Lift one-currency guard; consolidate to reporting currency (consolidation module). | 🟡 planned | TBD |
+| S75 | Connector import (Stripe/URL/SFTP) | Pull invoices directly via the connectors framework; zero-manual time-to-value. | 🟡 planned | TBD |
+| S76 | Multi-user pilot accounts | Self-serve user/role admin on RBAC + tenancy; per-tenant isolation UI. | 🟡 planned | TBD |
+
 ### Sprint block R — exit criteria
 - `make ci-local` green here: `tsc` clean, **100%/100%/100%/100%** backend coverage, jsdom green, offline demo green.
 - Playwright + Flutter jobs valid and green in GitHub Actions CI.

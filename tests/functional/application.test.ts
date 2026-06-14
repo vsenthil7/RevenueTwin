@@ -333,3 +333,36 @@ test('exportImportRun: unknown id throws not_found (S68)', async () => {
   const cfo = users.authenticate('cfo');
   await assert.rejects(() => app.exportImportRun(cfo, 'import-nope'), /not found/);
 });
+
+test('rescanDiff: detects new leakage vs an empty baseline and audits it (S73)', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  const csv = [IMPORT_HEADER, 'acme,INV-1,price_changed,12000,10800,GBP,0.95,45,Q1'].join('\n');
+  await app.importCsvCases(cfo, csv, '2026-04-02T00:00:00.000Z');
+  // baseline empty -> the imported case shows as new leakage
+  const r = await app.rescanDiff(cfo, [], '2026-04-03T00:00:00.000Z');
+  assert.ok(r.hasChanges);
+  assert.ok(r.newLeakageMinor > 0);
+  assert.equal(r.deltas[0]!.kind, 'new');
+  assert.equal(await app.auditIntact(cfo), true);
+});
+
+test('rescanDiff: no changes when baseline equals current (no audit noise) (S73)', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  const csv = [IMPORT_HEADER, 'acme,INV-1,price_changed,12000,10800,GBP,0.95,45,Q1'].join('\n');
+  await app.importCsvCases(cfo, csv, '2026-04-02T00:00:00.000Z');
+  const current = await app.listCases(cfo);
+  const r = await app.rescanDiff(cfo, current, '2026-04-03T00:00:00.000Z');
+  assert.equal(r.hasChanges, false);
+  assert.equal(r.deltas.length, 0);
+});
+
+test('rescanDiff: default timestamp when at omitted (S73)', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  const csv = [IMPORT_HEADER, 'acme,INV-1,price_changed,12000,10800,GBP,0.95,45,Q1'].join('\n');
+  await app.importCsvCases(cfo, csv, '2026-04-02T00:00:00.000Z');
+  const r = await app.rescanDiff(cfo, []);
+  assert.ok(r.hasChanges);
+});

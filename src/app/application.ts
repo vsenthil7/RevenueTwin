@@ -20,6 +20,7 @@ import { runQuery, type CaseQuery, type Page } from '../bulk/operations.ts';
 import { extractIntentEvent, type IntentExtractor, type IntentDocument } from '../intent/extraction.ts';
 import * as insights from './insights.ts';
 import { importCsv } from '../import/importer.ts';
+import { diffScans, type RescanResult } from '../scheduler/rescan.ts';
 
 /** S68: a durable, revisitable summary of one import run (sourced from the audit log). */
 export interface ImportRunSummary {
@@ -153,6 +154,22 @@ export class RevenueTwinApp {
     const run = runs.find((r) => r.importId === importId);
     if (!run) throw new AppError('Import run ' + importId + ' not found', 'not_found');
     return run;
+  }
+
+  /** S73: re-scan diff - compare a prior baseline snapshot against current persisted cases.
+   * Records a durable rescan.completed audit event so changes since last scan are revisitable. */
+  async rescanDiff(principal: AuthenticatedPrincipal, baseline: readonly LeakageCase[], at?: string): Promise<RescanResult> {
+    requirePerm(principal, 'case:read');
+    const current = await this.listCases(principal);
+    const result = diffScans(baseline, current);
+    const now = at ?? new Date().toISOString();
+    if (result.hasChanges) {
+      await this.record('rescan-agent', 'rescan.completed', 'rescan-' + now.replace(/[^0-9]/g, '').slice(0, 14), {
+        at: now, deltas: result.deltas.length, newLeakageMinor: result.newLeakageMinor,
+        resolvedLeakageMinor: result.resolvedLeakageMinor, netChangeMinor: result.netChangeMinor,
+      });
+    }
+    return result;
   }
 
   async getCase(principal: AuthenticatedPrincipal, caseId: string): Promise<LeakageCase> {

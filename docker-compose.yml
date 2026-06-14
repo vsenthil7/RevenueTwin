@@ -3,26 +3,36 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "8787:8787"
+      - "${API_PORT:-8787}:8787"
     environment:
       PORT: 8787
-      # Durable Postgres backend. The pg driver is wired at the edge (src/edge/pg-factory.ts); on
-      # boot the schema is applied and the demo portfolio is seeded only on a fresh database.
-      DATABASE_URL: postgres://revenuetwin:changeme@db:5432/revenuetwin
+      # Durable Postgres. Credentials come from the environment (.env), never hardcoded.
+      DATABASE_URL: postgres://${POSTGRES_USER:?set POSTGRES_USER}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:?set POSTGRES_DB}
+      # Real auth (S65). When set, the OIDC/Entra verifier is used; if unset the app falls
+      # back to the x-user-id demo shim (NOT for production).
+      OIDC_ISSUER: ${OIDC_ISSUER:-}
+      OIDC_AUDIENCE: ${OIDC_AUDIENCE:-}
+      OIDC_JWKS_URI: ${OIDC_JWKS_URI:-}
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8787/api/health || exit 1"]
+      interval: 10s
+      timeout: 4s
+      retries: 5
+      start_period: 10s
   db:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: revenuetwin
-      POSTGRES_PASSWORD: changeme
-      POSTGRES_DB: revenuetwin
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U revenuetwin"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       timeout: 3s
       retries: 10

@@ -64,3 +64,21 @@ the moat is the recall delta (0% blind -> 100% sighted) on commercial-intent lea
 - Postgres is the system of record; back it up. The audit chain is verifiable independently, so
   tamper detection survives a restore.
 - The service is stateless apart from Postgres; redeploy freely.
+
+## 7. Production deployment (S70)
+
+- **Secrets**: copy `.env.example` to `.env` and set real values. `.env` is git-ignored; never
+  commit secrets. docker-compose substitutes `POSTGRES_USER/PASSWORD/DB` from the environment
+  and fails fast (`:?`) if any are unset, so the stack cannot start with missing credentials.
+- **One-command deploy**: `./deploy.sh` refuses to run without `.env`, rejects the placeholder
+  password, builds + starts the stack, then health-gates: it polls `GET /api/health` and only
+  reports success once the API is actually healthy (no race on a still-booting container).
+- **Real auth**: set `OIDC_ISSUER`, `OIDC_AUDIENCE`, `OIDC_JWKS_URI` in `.env` to enable the
+  OIDC/Entra verifier (S65). If unset, the app logs that it is using the x-user-id demo shim,
+  which must NOT be used with real financial data.
+- **HTTPS/TLS**: the app speaks plain HTTP on 8787 and is designed to run behind a TLS-terminating
+  reverse proxy (nginx, Caddy, or a cloud load balancer). Terminate TLS there, forward to the
+  container, and restrict the container port to the proxy. Do not expose 8787 to the public
+  internet directly. Set HSTS at the proxy.
+- **Health-gated restarts**: both services declare healthchecks; the API waits for Postgres to be
+  healthy before starting, and Docker will restart unhealthy containers (`restart: unless-stopped`).

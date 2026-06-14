@@ -96,3 +96,14 @@ equivalent executed proof is named.
  (rehydrate, init, Date->ISO normalization).
  - `detail` is stored as TEXT (not jsonb) so the exact JSON string the audit hash was computed over
  round-trips byte-for-byte; jsonb reorders object keys, which would break the order-sensitive hash.
+
+## Deployment hardening (S70, addressed)
+
+- **Secrets**: docker-compose no longer hardcodes `changeme`. Postgres credentials and OIDC
+  config come from `.env` (git-ignored; template in `.env.example`), with `:?` guards that fail
+  startup if required secrets are unset. `deploy.sh` additionally rejects the placeholder password.
+- **HTTPS/TLS**: the app serves plain HTTP and is intended to run behind a TLS-terminating reverse
+  proxy. Terminating TLS in-process is intentionally out of scope; the documented deployment puts
+  a proxy (nginx/Caddy/LB) in front. This is a deployment-topology choice, not a missing feature.
+- **Race-free deploy**: `deploy.sh` health-gates on `GET /api/health` rather than assuming the
+  container is ready the moment compose returns.

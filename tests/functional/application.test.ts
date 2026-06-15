@@ -382,3 +382,24 @@ test('consolidatedRecoverable: converts multi-currency cases into one reporting 
   assert.ok(currencies.includes('GBP'));
   assert.ok(currencies.includes('USD'));
 });
+
+test('importFromSourceCases: pulls from a connector source, persists + audits, fetches once (S75)', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  let calls = 0;
+  const fetcher = async () => { calls += 1; return [IMPORT_HEADER, 'acme,INV-1,price_changed,12000,10800,GBP,0.95,45,Q1'].join('\n'); };
+  const r = await app.importFromSourceCases(cfo, 'stripe-export', fetcher, '2026-04-02T00:00:00.000Z');
+  assert.equal(r.cases.length, 1);
+  assert.equal(calls, 1, 'fetcher called exactly once');
+  // persisted + audited like a normal import
+  assert.equal((await app.listCases(cfo)).length, 1);
+  assert.equal(await app.auditIntact(cfo), true);
+  const runs = await app.listImportRuns(cfo);
+  assert.equal(runs.length, 1);
+});
+
+test('importFromSourceCases: empty source is rejected (S75)', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  await assert.rejects(() => app.importFromSourceCases(cfo, 'url', async () => ''), /returned no data/);
+});

@@ -132,3 +132,21 @@ could not compile until their imports existed; Block R wires and tests them.
 | P-16 | What-if / scenario modelling | S80 | planned |
 | P-17 | Audit-pack PDF + board deck export | S81 | planned |
 | P-18 | API keys + programmatic ingestion | S82 | planned |
+| P-19 | Golden Thread Northwind (CI-gated) | S83 | planned (spec gap: section I/11) |
+| P-20 | SEED_MANIFEST + precision/recall/F1 | S84 | planned (spec gap: section A.5/E.6) |
+| P-21 | Blind-vs-sighted moat delta surfaced | S85 | planned (spec gap: section B.1/10) |
+| P-22 | THREAT_MODEL.md STRIDE standalone | S86 | planned (spec gap: section E.5) |
+| P-23 | ContractIntentMismatch first-class case | S87 | planned (spec gap: section 8) |
+| P-24 | Explicit IQ-layer naming + provenance | S88 | planned (spec gap: section B/10) |
+| P-25 | Data lineage trace_id invariant | S89 | planned (spec gap: section J) |
+| P-26 | Mutation (Stryker) + axe-core WCAG | S90 | planned (spec gap: section C.2/E.4) |
+| P-27 | Multi-agent idempotency/race test | S91 | planned (spec gap: section 5) |
+| P-28 | Demo video + submission pack | S92 | planned (NEEDS USER: video, Azure/M365 creds) |
+| P-19 | SPEC GAP: ContractIntentMismatch first-class case | S83 | planned (spec gap) |
+| P-20 | SPEC GAP: SEED_MANIFEST.md + precision/recall/F1 + regression gate | S84 | planned (spec gap) |
+| P-21 | SPEC GAP: THREAT_MODEL.md STRIDE + adversarial tests | S85 | planned (spec gap) |
+| P-22 | SPEC GAP: Stryker mutation gate >=90% on core | S86 | planned (spec gap) |
+| P-23 | SPEC GAP: WCAG 2.2 AA + axe-core CI | S87 | planned (spec gap) |
+| P-24 | SPEC GAP: per-agent spec docs + multi-agent race test | S88 | planned (spec gap) |
+| P-25 | SPEC GAP: screen-state matrix coverage | S89 | planned (spec gap) |
+| P-26 | SPEC GAP: M365 Copilot declarative agent surface (needs Azure tenant) | S90 | planned (spec gap) |

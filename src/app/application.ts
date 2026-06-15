@@ -22,6 +22,7 @@ import * as insights from './insights.ts';
 import { importCsv } from '../import/importer.ts';
 import { diffScans, type RescanResult } from '../scheduler/rescan.ts';
 import { FxRateBook, consolidate, type ConsolidatedTotal } from '../consolidation/fx-consolidation.ts';
+import { importFromSource, type CsvSource } from '../import/source-import.ts';
 import type { FxRate, CurrencyCode } from '../money/money.ts';
 
 /** S68: a durable, revisitable summary of one import run (sourced from the audit log). */
@@ -137,6 +138,18 @@ export class RevenueTwinApp {
       rowsAccepted: result.rowsAccepted, rowsRejected: skipped.length, currency: result.currency,
     });
     return { ...result, cases: persisted, rowsRejected: skipped.length, rejects: skipped };
+  }
+
+  /** S75: pull CSV from a connector source (Stripe/HTTPS/SFTP fetcher) and import it. */
+  async importFromSourceCases(
+    principal: AuthenticatedPrincipal, sourceName: string, fetcher: CsvSource,
+    at?: string, mapping?: import('../import/mapping.ts').ColumnMapping,
+  ): Promise<import('../import/importer.ts').ImportResult> {
+    requirePerm(principal, 'case:triage');
+    const sr = await importFromSource(sourceName, fetcher, {});
+    // S75: importFromSource fetched + validated the CSV once; persist it through the standard
+    // import path so scope checks, audit and import-run recording all apply.
+    return this.importCsvCases(principal, sr.csv, at, mapping);
   }
 
   /** S68: list past import runs (durable, from the audit log), newest first. */

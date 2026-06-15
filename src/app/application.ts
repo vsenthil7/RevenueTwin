@@ -21,6 +21,8 @@ import { extractIntentEvent, type IntentExtractor, type IntentDocument } from '.
 import * as insights from './insights.ts';
 import { importCsv } from '../import/importer.ts';
 import { diffScans, type RescanResult } from '../scheduler/rescan.ts';
+import { FxRateBook, consolidate, type ConsolidatedTotal } from '../consolidation/fx-consolidation.ts';
+import type { FxRate, CurrencyCode } from '../money/money.ts';
 
 /** S68: a durable, revisitable summary of one import run (sourced from the audit log). */
 export interface ImportRunSummary {
@@ -170,6 +172,18 @@ export class RevenueTwinApp {
       });
     }
     return result;
+  }
+
+  /** S74: consolidate recoverable across all currencies into one reporting figure (FX-converted). */
+  async consolidatedRecoverable(
+    principal: AuthenticatedPrincipal, reporting: CurrencyCode, rates: readonly FxRate[], asOf: string,
+  ): Promise<ConsolidatedTotal> {
+    requirePerm(principal, 'case:read');
+    const book = new FxRateBook();
+    for (const r of rates) book.add(r);
+    const cases = await this.listCases(principal);
+    const amounts = cases.flatMap((c) => c.findings.map((f) => f.netRecoverable));
+    return consolidate(amounts, reporting, book, asOf);
   }
 
   async getCase(principal: AuthenticatedPrincipal, caseId: string): Promise<LeakageCase> {

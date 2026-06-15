@@ -123,7 +123,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | P-07 | ROI/payback calculator UI | S71 | OK (executed here): roiCalculatorHTML interactive panel + recalc via /api/roi; 1 jsdom test |
 | P-08 | Explain-the-number provenance panel | S72 | OK (executed here): mapCase findings breakdown + provenanceBreakdownHTML derivation table; 2 jsdom tests |
 | P-09 | Scheduled re-scan + diff alerts | S73 | OK (executed here): rescan.ts diffScans 100%, app.rescanDiff + rescan.completed audit; 6 unit + 3 functional |
-| P-10 | Multi-currency import + consolidation | S74 | planned |
+| P-10 | Multi-currency import + consolidation | S74 | OK (executed here): app.consolidatedRecoverable via FxRateBook+consolidate, multi-currency portfolio total; 1 functional test |
 | P-11 | Connector import (Stripe/URL/SFTP) | S75 | planned |
 | P-12 | Multi-user pilot accounts + tenant isolation UI | S76 | planned |
 | P-13 | Recovery workflow + dunning export | S77 | planned |

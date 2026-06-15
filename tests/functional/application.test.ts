@@ -366,3 +366,19 @@ test('rescanDiff: default timestamp when at omitted (S73)', async () => {
   const r = await app.rescanDiff(cfo, []);
   assert.ok(r.hasChanges);
 });
+
+test('consolidatedRecoverable: converts multi-currency cases into one reporting figure (S74)', async () => {
+  const { app, users } = freshApp();
+  const cfo = users.authenticate('cfo');
+  // two single-currency imports: GBP and USD
+  await app.importCsvCases(cfo, [IMPORT_HEADER, 'acme,INV-1,price_changed,12000,10800,GBP,0.95,45,Q1'].join('\n'), '2026-04-02T00:00:00.000Z');
+  await app.importCsvCases(cfo, [IMPORT_HEADER, 'globex,INV-2,price_changed,20000,18000,USD,0.95,30,US'].join('\n'), '2026-04-02T00:00:00.000Z');
+  const rates = [{ from: 'USD' as const, to: 'GBP' as const, rate: 0.8, asOf: '2026-04-02' }];
+  const c = await app.consolidatedRecoverable(cfo, 'GBP', rates, '2026-04-02');
+  assert.equal(c.reporting, 'GBP');
+  assert.ok(c.total.amount > 0);
+  // breakdown should include both source currencies
+  const currencies = c.currencyBreakdown.map((b) => b.currency);
+  assert.ok(currencies.includes('GBP'));
+  assert.ok(currencies.includes('USD'));
+});

@@ -143,7 +143,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | P-27 | Multi-agent idempotency/race test | S91 | planned (spec gap: section 5) |
 | P-28 | Demo video + submission pack | S92 | planned (NEEDS USER: video, Azure/M365 creds) |
 | P-19 | ContractIntentMismatch first-class case | S83 | OK (executed here): detect+score+resolve, presents both sides, human-resolved; 12 unit @ 100% |
-| P-20 | SPEC GAP: SEED_MANIFEST.md + precision/recall/F1 + regression gate | S84 | planned (spec gap) |
+| P-20 | SEED_MANIFEST.md + precision/recall/F1 + regression gate | S84 | OK (executed here): SEED_MANIFEST.md + src/metrics/detection.ts 100% + manifest moat-delta test |
 | P-21 | SPEC GAP: THREAT_MODEL.md STRIDE + adversarial tests | S85 | planned (spec gap) |
 | P-22 | SPEC GAP: Stryker mutation gate >=90% on core | S86 | planned (spec gap) |
 | P-23 | SPEC GAP: WCAG 2.2 AA + axe-core CI | S87 | planned (spec gap) |

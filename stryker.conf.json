@@ -1,0 +1,37 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "S86: mutation gate on the deterministic core only (shared standard C.2). Command runner re-runs the targeted core test suite per mutant.",
+  "packageManager": "npm",
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "node --import tsx --test tests/unit/money.test.ts tests/unit/reconciliation.test.ts tests/unit/contract-intent-mismatch.test.ts tests/unit/detection.test.ts"
+  },
+  "mutate": [
+    "src/money/money.ts",
+    "src/core/reconciliation.ts",
+    "src/intent/contract-intent-mismatch.ts",
+    "src/metrics/detection.ts"
+  ],
+  "reporters": [
+    "clear-text",
+    "progress",
+    "json"
+  ],
+  "coverageAnalysis": "off",
+  "thresholds": {
+    "high": 95,
+    "low": 90,
+    "break": 90
+  },
+  "timeoutMS": 30000,
+  "concurrency": 4,
+  "jsonReporter": {
+    "fileName": "reports/mutation/mutation.json"
+  },
+  "mutator": {
+    "excludedMutations": [
+      "StringLiteral"
+    ]
+  },
+  "_exemption": "Equivalent-mutant exemption (shared standard C.2): StringLiteral mutations target error-MESSAGE text, not business logic. Asserting exact human-readable message strings is brittle and tests message wording, not behavior. Numeric/operator/conditional mutants are NOT exempt."
+}

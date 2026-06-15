@@ -18,11 +18,13 @@
     "status": "node --import tsx scripts/status.ts",
     "demo:live": "node --import tsx src/app/demo-live.ts",
     "serve:web": "node --import tsx scripts/serve-web.ts",
-    "start": "node --import tsx scripts/serve-web.ts"
+    "start": "node --import tsx scripts/serve-web.ts",
+    "mutation": "stryker run"
   },
   "license": "UNLICENSED",
   "devDependencies": {
     "@playwright/test": "^1.60.0",
+    "@stryker-mutator/core": "^9.6.1",
     "@types/jsdom": "^28.0.3",
     "@types/node": "^25.9.2",
     "@types/pg": "^8.11.0",

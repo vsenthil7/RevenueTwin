@@ -151,3 +151,64 @@ test('fromDecimal rejects non-finite', () => {
 test('format renders major units with currency', () => {
   assert.equal(format(money(1250, 'GBP')), 'GBP 12.50');
 });
+
+test('allocate: uneven weights pin exact positions (kills sort/division/loop mutants)', () => {
+  // total 1000, weights 1:2:7 -> exact 100/200/700, no remainder
+  const parts = allocate(money(1000, 'GBP'), [1, 2, 7]);
+  assert.deepEqual(parts.map((p) => p.amount), [100, 200, 700]);
+});
+
+test('allocate: remainder goes to the largest fractional part, by position', () => {
+  // total 10, weights 1:1:1 -> exact 3.33/3.33/3.33, floors 3/3/3, remainder 1
+  // equal fracs -> tie broken by index -> first element gets the extra unit
+  const parts = allocate(money(10, 'GBP'), [1, 1, 1]);
+  assert.deepEqual(parts.map((p) => p.amount), [4, 3, 3]);
+});
+
+test('allocate: distinct fractional parts route the remainder to the biggest frac', () => {
+  // total 100, weights 3:3:4 -> exact 30/30/40 exact, no remainder
+  const even = allocate(money(100, 'GBP'), [3, 3, 4]);
+  assert.deepEqual(even.map((p) => p.amount), [30, 30, 40]);
+  // total 7, weights 1:1:1 -> exact 2.33/2.33/2.33, floors 2/2/2, remainder 1 -> index 0
+  const odd = allocate(money(7, 'GBP'), [1, 1, 1]);
+  assert.deepEqual(odd.map((p) => p.amount), [3, 2, 2]);
+});
+
+test('allocate: negative total preserves sign at exact positions', () => {
+  const parts = allocate(money(-1000, 'GBP'), [1, 2, 7]);
+  assert.deepEqual(parts.map((p) => p.amount), [-100, -200, -700]);
+});
+
+test('money: rejects a non-finite amount (kills isFinite conditional)', () => {
+  assert.throws(() => money(Infinity, 'GBP'), MoneyError);
+  assert.throws(() => money(NaN, 'GBP'), MoneyError);
+});
+
+test('allocate: a zero weight is allowed and receives nothing (kills w<0 vs w<=0)', () => {
+  // weights [0,1,1]: zero-weight element gets 0, others split the total
+  const parts = allocate(money(1000, 'GBP'), [0, 1, 1]);
+  assert.deepEqual(parts.map((p) => p.amount), [0, 500, 500]);
+});
+
+test('allocate: zero total yields all-zero parts with positive sign (kills sign boundary)', () => {
+  const parts = allocate(money(0, 'GBP'), [1, 2, 3]);
+  assert.deepEqual(parts.map((p) => p.amount), [0, 0, 0]);
+  // sign * 0 is 0 either way, but Object.is distinguishes -0 from 0
+  parts.forEach((p) => assert.ok(Object.is(p.amount, 0)));
+});
+
+test('allocate: large remainder distributes one unit each to top frac parts in order', () => {
+  // total 1003, weights 1:1:1 -> exact 334.33.. floors 334/334/334 sum 1002, remainder 1 -> index 0
+  const parts = allocate(money(1003, 'GBP'), [1, 1, 1]);
+  assert.deepEqual(parts.map((p) => p.amount), [335, 334, 334]);
+  assert.equal(parts.reduce((s, p) => s + p.amount, 0), 1003);
+});
+
+test('fromDecimal: rounds half-away-from-zero for negatives (kills rounding sign)', () => {
+  // -2.345 * 100 = -234.5 -> half-away-from-zero -> -235
+  assert.equal(fromDecimal(-2.345, 'GBP').amount, -235);
+  // +2.345 -> +235 (symmetric)
+  assert.equal(fromDecimal(2.345, 'GBP').amount, 235);
+  // -2.344 -> -234 (rounds toward zero side)
+  assert.equal(fromDecimal(-2.344, 'GBP').amount, -234);
+});

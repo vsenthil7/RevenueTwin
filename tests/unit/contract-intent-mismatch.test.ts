@@ -82,3 +82,28 @@ test('detectMismatch: price_increase with undefined uplift uses 0 fallback (no m
   // (undefined ?? 0) = 0, not > 3 -> falls through to no_mismatch
   assert.equal(m.kind, 'no_mismatch');
 });
+
+test('detectMismatch: exact score pins gap arithmetic and multiply (kills +/* mutants)', () => {
+  // uplift 6, escalator 3 -> gap 3 (<5) -> factor 0.8 -> score = conf*0.8
+  const m = detectMismatch('g1', intent({ upliftPercent: 6, confidence: 0.5 }) as never, term({ escalatorPercent: 3 }) as never);
+  // gap=3: 0.5*0.8=0.4 . If - became +: gap=9>=5 -> 0.5*1=0.5 . If * became /: 0.5/0.8=0.625 .
+  assert.equal(m.score, 0.4);
+});
+
+test('detectMismatch: gap exactly 5 takes the full factor (kills >= boundary)', () => {
+  // uplift 8, escalator 3 -> gap exactly 5 -> >=5 true -> factor 1 -> score = conf
+  const m = detectMismatch('g2', intent({ upliftPercent: 8, confidence: 0.5 }) as never, term({ escalatorPercent: 3 }) as never);
+  assert.equal(m.score, 0.5);
+});
+
+test('detectMismatch: gap of 4 (just under 5) takes the reduced factor', () => {
+  // uplift 7, escalator 3 -> gap 4 (<5) -> factor 0.8
+  const m = detectMismatch('g3', intent({ upliftPercent: 7, confidence: 1 }) as never, term({ escalatorPercent: 3 }) as never);
+  assert.equal(m.score, 0.8);
+});
+
+test('detectMismatch: a non-price_increase intent with matching name does not enter the uplift branch (kills && short-circuit)', () => {
+  // intentType discount_grant but with an upliftPercent set: must NOT be treated as uplift mismatch
+  const m = detectMismatch('g4', intent({ intentType: 'discount_grant', upliftPercent: 50 }) as never, term({ escalatorPercent: 3 }) as never);
+  assert.equal(m.kind, 'discount_not_in_contract');
+});

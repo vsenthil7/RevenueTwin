@@ -125,3 +125,56 @@ test('moreRecoverable compares net recoverable', () => {
   assert.equal(moreRecoverable(a, b), true);
   assert.equal(moreRecoverable(b, a), false);
 });
+
+test('RECOVERY_WINDOW_DAYS is exactly six years (kills 6*365 arithmetic mutant)', () => {
+  assert.equal(RECOVERY_WINDOW_DAYS, 2190);
+});
+
+test('netRecoverable decays monotonically downward with age (kills division-direction mutant)', () => {
+  const young = netRecoverable(input({ ageDays: 100 })).amount;
+  const old = netRecoverable(input({ ageDays: 1000 })).amount;
+  // older must recover strictly LESS (1 - age/window shrinks as age grows)
+  assert.ok(young > old, young + ' should exceed ' + old);
+  // exact value at age 100: round(10000 * (1 - 100/2190))
+  assert.equal(young, Math.round(100_00 * (1 - 100/2190)));
+});
+
+test('netRecoverable at exactly the window boundary is zero (kills >= boundary)', () => {
+  assert.equal(netRecoverable(input({ ageDays: RECOVERY_WINDOW_DAYS })).amount, 0);
+  // one day inside the window is strictly positive
+  assert.ok(netRecoverable(input({ ageDays: RECOVERY_WINDOW_DAYS - 1 })).amount > 0);
+});
+
+test('grossDetected: exactly equal expected/actual yields zero, not a negative (kills >0 boundary)', () => {
+  assert.equal(grossDetected(input({ expected: money(500, 'GBP'), actual: money(500, 'GBP') })).amount, 0);
+});
+
+test('buildFinding: zero gross returns null (kills <=0 boundary on buildFinding)', () => {
+  assert.equal(buildFinding(input({ expected: money(500, 'GBP'), actual: money(500, 'GBP') })), null);
+});
+
+test('buildFinding: fully time-barred (net 0) returns null', () => {
+  assert.equal(buildFinding(input({ ageDays: RECOVERY_WINDOW_DAYS })), null);
+});
+
+test('buildFinding: includes field/name only when present (kills conditional-spread mutants)', () => {
+  const withBoth = buildFinding(input({ field: 'unit_price', name: 'Q1 license' }));
+  assert.ok(withBoth);
+  assert.equal(withBoth.field, 'unit_price');
+  assert.equal(withBoth.name, 'Q1 license');
+  // when absent, the keys must NOT be present (not just undefined)
+  const without = buildFinding(input());
+  assert.ok(without);
+  assert.equal(Object.prototype.hasOwnProperty.call(without, 'field'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(without, 'name'), false);
+});
+
+test('moreRecoverable: strictly greater, not >= (kills > boundary)', () => {
+  const hi = { id: 'h', type: 'price_changed' as const, netRecoverable: money(200, 'GBP'), grossDetected: money(200, 'GBP'), expected: money(200, 'GBP'), actual: money(0, 'GBP'), confidence: 1 };
+  const lo = { ...hi, id: 'l', netRecoverable: money(100, 'GBP') };
+  const eq = { ...hi, id: 'e' };
+  assert.equal(moreRecoverable(hi, lo), true);
+  assert.equal(moreRecoverable(lo, hi), false);
+  // equal amounts -> NOT more recoverable (strict >)
+  assert.equal(moreRecoverable(hi, eq), false);
+});

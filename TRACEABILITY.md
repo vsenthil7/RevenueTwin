@@ -142,7 +142,7 @@ could not compile until their imports existed; Block R wires and tests them.
 | P-26 | Mutation (Stryker) + axe-core WCAG | S90 | planned (spec gap: section C.2/E.4) |
 | P-27 | Multi-agent idempotency/race test | S91 | planned (spec gap: section 5) |
 | P-28 | Demo video + submission pack | S92 | planned (NEEDS USER: video, Azure/M365 creds) |
-| P-19 | SPEC GAP: ContractIntentMismatch first-class case | S83 | planned (spec gap) |
+| P-19 | ContractIntentMismatch first-class case | S83 | OK (executed here): detect+score+resolve, presents both sides, human-resolved; 12 unit @ 100% |
 | P-20 | SPEC GAP: SEED_MANIFEST.md + precision/recall/F1 + regression gate | S84 | planned (spec gap) |
 | P-21 | SPEC GAP: THREAT_MODEL.md STRIDE + adversarial tests | S85 | planned (spec gap) |
 | P-22 | SPEC GAP: Stryker mutation gate >=90% on core | S86 | planned (spec gap) |
